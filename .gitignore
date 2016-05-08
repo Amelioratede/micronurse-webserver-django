@@ -60,3 +60,13 @@ target/
 
 #Ipython Notebook
 .ipynb_checkpoints
+
+#Others
+.directory
+*~
+
+#Sqlite DB
+*.sqlite*
+
+#IDEA Project
+.idea/
