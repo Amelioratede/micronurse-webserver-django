@@ -1,21 +1,51 @@
 import time
 from django.http import JsonResponse, HttpRequest, Http404
+from django.core.signing import TimestampSigner
+from django.core.cache import cache
+from .view.login_view import IOT_TOKEN_VALID_HOURS
 import redis
 import json
+import hashlib
+import random
 
 
-def post_check(req: HttpRequest):
+TIMESTAMP_VALID_SECONDS = 30
+def post_check(req: HttpRequest, token_key: str=None):
     if req.method == 'GET':
         raise Http404('Page not found.')
-    if not req.POST['data']:
+    if 'data' not in req.POST.keys():
         raise Http404('No data.')
+    if 'timestamp' not in req.POST.keys():
+        raise Http404('No timestamp.')
+    if time.time() - int(req.POST['timestamp']) > TIMESTAMP_VALID_SECONDS * 1000:
+        raise Http404('URL expired.')
+    if 'sign' not in req.POST.keys():
+        raise Http404('No sign.')
+    md5_check = hashlib.md5()
+    md5_check.update(req.POST['data'].encode())
+    md5_check.update(req.POST['timestamp'].encode())
+    token_str = None
+    if not token_key == None:
+        token_str = cache.get(token_key)
+        if token_str == None:
+            raise Http404('No token.')
+        md5_check.update(token_str.encode())
+    if not md5_check.hexdigest() == req.POST['sign']:
+        raise Http404('Data Invalid.')
+    if not token_str == None:
+        cache.set(token_key, token_str, IOT_TOKEN_VALID_HOURS * 3600)
     return json.loads(req.POST['data'])
+
+
+def get_token(user_id: str):
+    signer = TimestampSigner(salt=random.random() * 1000000)
+    return signer.sign(user_id)[len(user_id) + 1 :]
 
 
 def get_json_response(result_code: int = 0, message: str = '', **kwargs):
     j = dict(result_code=result_code, message=message)
     j.update(kwargs)
-    return JsonResponse(j, charset='utf-8')
+    return JsonResponse(j)
 
 
 def get_redis():

@@ -45,11 +45,12 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.locale.LocaleMiddleware',
-    #'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware'
 ]
 
 ROOT_URLCONF = 'micronurse.urls'
@@ -72,6 +73,31 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'micronurse.wsgi.application'
 
+#SESSION
+
+SESSION_ENGINE = 'redis_sessions.session'
+SESSION_REDIS_HOST = 'localhost'
+SESSION_REDIS_PORT = 6379
+SESSION_REDIS_PREFIX = 'micronurse_session'
+
+SESSION_COOKIE_AGE = 60*30
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+#Cache
+CACHES = {
+    'default': {
+        'BACKEND': 'redis_cache.RedisCache',
+        'LOCATION': 'localhost:6379',
+        'OPTIONS': {
+            'PARSER_CLASS': 'redis.connection.HiredisParser',
+            'CONNECTION_POOL_CLASS': 'redis.BlockingConnectionPool',
+            'CONNECTION_POOL_CLASS_KWARGS': {
+                'max_connections': 50,
+                'timeout': 15,
+            }
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases

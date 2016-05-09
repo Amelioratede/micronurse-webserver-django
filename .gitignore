@@ -64,6 +64,7 @@ target/
 #Others
 .directory
 *~
+*.rdb
 
 #Sqlite DB
 *.sqlite*
