@@ -11,6 +11,9 @@ import random
 
 TIMESTAMP_VALID_SECONDS = 30
 def post_check(req: HttpRequest, token_key: str=None):
+    """
+    :rtype: dict
+    """
     if req.method == 'GET':
         raise Http404('Page not found.')
     if 'data' not in req.POST.keys():

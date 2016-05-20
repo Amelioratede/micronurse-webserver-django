@@ -15,9 +15,10 @@ Including another URLconf
 """
 from django.conf.urls import url
 
-from micronurse_webserver.view import iot_report_view, login_view
+from micronurse_webserver.view import iot_report_view, login_view, logout_view
 
 urlpatterns = [
     url(r'^iot/report', iot_report_view.report, name='iot/report'),
-    url(r'^iot/login', login_view.iot_login, name='iot/login')
+    url(r'^iot/login', login_view.iot_login, name='iot/login'),
+    url(r'^iot/logout', logout_view.iot_logout, name='iot/logout')
 ]

@@ -1,9 +1,7 @@
-import time
 from django.db import models
+import json
 
 # Create your models here.
-from django.db.models.signals import post_migrate
-from django.dispatch import receiver
 
 
 class Account(models.Model):
@@ -17,3 +15,27 @@ class Account(models.Model):
     portrait = models.ImageField(null=True)
     birth = models.DateField(null=True)
     register_date = models.DateField(auto_now_add=True)
+
+
+class Sensor(models.Model):
+    account = models.ForeignKey(Account)
+    timestamp = models.DateTimeField()
+    name = models.CharField(max_length=30)
+
+    class Meta:
+        abstract = True
+        unique_together = ('account', 'name', 'timestamp')
+
+
+class Thermometer(Sensor):
+    temperature = models.FloatField()
+
+
+class Humidometer(Sensor):
+    humidity = models.FloatField()
+
+
+class GPS(Sensor):
+    longitude = models.FloatField()
+    latitude = models.FloatField()
+
