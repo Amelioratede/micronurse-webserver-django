@@ -17,12 +17,16 @@ def post_check(req: HttpRequest, token_key: str=None):
     if req.method == 'GET':
         raise Http404('Page not found.')
     if 'data' not in req.POST.keys():
+        print('No data')
         raise Http404('No data.')
     if 'timestamp' not in req.POST.keys():
+        print('No timestamp')
         raise Http404('No timestamp.')
     if time.time() - int(req.POST['timestamp']) > TIMESTAMP_VALID_SECONDS * 1000:
+        print('URL expired.')
         raise Http404('URL expired.')
     if 'sign' not in req.POST.keys():
+        print('No sign.')
         raise Http404('No sign.')
     md5_check = hashlib.md5()
     md5_check.update(req.POST['data'].encode())
@@ -33,8 +37,10 @@ def post_check(req: HttpRequest, token_key: str=None):
         if token_str == None:
             raise Http404('No token.')
         md5_check.update(token_str.encode())
-    if not md5_check.hexdigest() == req.POST['sign']:
-        raise Http404('Data Invalid.')
+    if not md5_check.hexdigest().lower() == str(req.POST['sign']).lower():
+        print('md5:' + md5_check.hexdigest().lower() + ' sign:' + str(req.POST['sign']).lower())
+        print('Data invalid.')
+        raise Http404('Data invalid.')
     if not token_str == None:
         cache.set(token_key, token_str, IOT_TOKEN_VALID_HOURS * 3600)
     return json.loads(req.POST['data'])

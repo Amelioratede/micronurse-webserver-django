@@ -8,6 +8,7 @@ def register_test_account(sender, **kwargs):
         testAccount = Account(phone_number='123456',
                               password='123456',
                               gender='M',
+                              account_type='O',
                               nickname='Test')
         testAccount.save()
         print('Test account created.')

@@ -1,5 +1,4 @@
 from django.db import models
-import json
 
 # Create your models here.
 
@@ -11,6 +10,10 @@ class Account(models.Model):
     gender = models.CharField(max_length=1, choices=(
         ('M', 'Male'),
         ('F', 'Female')
+    ))
+    account_type = models.CharField(max_length=1, choices=(
+        ('O', 'Older'),
+        ('G', 'Guardian')
     ))
     portrait = models.ImageField(null=True)
     birth = models.DateField(null=True)

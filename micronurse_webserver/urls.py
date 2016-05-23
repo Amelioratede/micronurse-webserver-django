@@ -20,5 +20,6 @@ from micronurse_webserver.view import iot_report_view, login_view, logout_view
 urlpatterns = [
     url(r'^iot/report', iot_report_view.report, name='iot/report'),
     url(r'^iot/login', login_view.iot_login, name='iot/login'),
-    url(r'^iot/logout', logout_view.iot_logout, name='iot/logout')
+    url(r'^iot/logout', logout_view.iot_logout, name='iot/logout'),
+    url(r'^mobile/login', login_view.mobile_login, name='mobile/login')
 ]

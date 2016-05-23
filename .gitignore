@@ -71,3 +71,7 @@ target/
 
 #IDEA Project
 .idea/
+*.iml
+
+#Migration
+**migrations**/*
