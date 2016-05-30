@@ -15,8 +15,6 @@ class Account(models.Model):
         ('O', 'Older'),
         ('G', 'Guardian')
     ))
-    portrait = models.ImageField(null=True)
-    birth = models.DateField(null=True)
     register_date = models.DateField(auto_now_add=True)
 
 
@@ -27,6 +25,7 @@ class Sensor(models.Model):
 
     class Meta:
         abstract = True
+        ordering = ['-timestamp']
         unique_together = ('account', 'name', 'timestamp')
 
 

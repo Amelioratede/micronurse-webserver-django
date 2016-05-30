@@ -2,7 +2,6 @@ import time
 from django.http import JsonResponse, HttpRequest, Http404
 from django.core.signing import TimestampSigner
 from django.core.cache import cache
-from .view.login_view import IOT_TOKEN_VALID_HOURS
 import redis
 import json
 import hashlib
@@ -10,7 +9,7 @@ import random
 
 
 TIMESTAMP_VALID_SECONDS = 30
-def post_check(req: HttpRequest, token_key: str=None):
+def post_check(req: HttpRequest, token_key: str=None, token_valid_hours: int=None):
     """
     :rtype: dict
     """
@@ -42,7 +41,7 @@ def post_check(req: HttpRequest, token_key: str=None):
         print('Data invalid.')
         raise Http404('Data invalid.')
     if not token_str == None:
-        cache.set(token_key, token_str, IOT_TOKEN_VALID_HOURS * 3600)
+        cache.set(token_key, token_str, token_valid_hours * 3600)
     return json.loads(req.POST['data'])
 
 

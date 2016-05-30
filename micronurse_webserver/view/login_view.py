@@ -44,7 +44,8 @@ def mobile_login(req: HttpRequest):
         req.session[SESSION_ATTR_MOBILE_USER] = account
         token_str = utils.get_token(account.phone_number)
         cache.set(CACHE_KEY_MOBILE_TOKEN + account.phone_number, token_str, MOBILE_TOKEN_VALID_HOURS * 3600)
-        res = utils.get_json_response(LOGIN_SUCCESS, 'Login Success', token=token_str)
+        res = utils.get_json_response(LOGIN_SUCCESS, 'Login Success', token=token_str, nickname=account.nickname,
+                                      account_type=account.account_type)
         return res
     except Account.DoesNotExist:
         return utils.get_json_response(LOGIN_USER_NOT_EXISTS, 'User not exists')
