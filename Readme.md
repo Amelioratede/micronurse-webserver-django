@@ -8,7 +8,7 @@
 ②安装必要的python模块：
 
 ```bash
-sudo pip install pillow django django-redis-cache django-redis-sessions hiredis
+pip install pillow django django-redis-cache django-redis-sessions djangorestframework hiredis
 ```
 
 ③启动，在项目根目录下运行如下命令：

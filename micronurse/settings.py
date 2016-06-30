@@ -24,7 +24,7 @@ SECRET_KEY = '4(zz!6rfh_&g$e@6_-so7_i*y6yj!)%qm=16!axw1@u)&k!-6*'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
+DEFAULT_CHARSET = 'utf-8'
 ALLOWED_HOSTS = []
 
 
@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'micronurse_webserver'
+    'micronurse_webserver',
+    'rest_framework'
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -83,6 +84,10 @@ SESSION_SERIALIZER  = 'django.contrib.sessions.serializers.PickleSerializer'
 
 SESSION_COOKIE_AGE = 60*30
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+REST_FRAMEWORK = {
+    'EXCEPTION_HANDLER': 'micronurse_webserver.view.exception_handler.custom_exception_handler'
+}
 
 #Cache
 CACHES = {

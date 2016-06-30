@@ -13,17 +13,10 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url
-
-from micronurse_webserver.view import login_view, logout_view
-from micronurse_webserver.view.iot import iot_report_view
-from micronurse_webserver.view.mobile import get_sensor_data_view
+from django.conf.urls import url, include
 
 
 urlpatterns = [
-    url(r'^iot/report', iot_report_view.report, name='iot/report'),
-    url(r'^iot/login', login_view.iot_login, name='iot/login'),
-    url(r'^iot/logout', logout_view.iot_logout, name='iot/logout'),
-    url(r'^mobile/login', login_view.mobile_login, name='mobile/login'),
-    url(r'^mobile/gettestsensordata', get_sensor_data_view.get_test_sensor_data, name='mobile/gettestsensordata')
+    #V1 REST API
+    url(r'^v1/', include('micronurse_webserver.url.v1.urls')),
 ]
