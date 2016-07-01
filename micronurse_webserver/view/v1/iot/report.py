@@ -9,9 +9,10 @@ from micronurse_webserver.serializer import result_code
 from micronurse_webserver import utils
 from micronurse_webserver import models
 
+
 @api_view(['POST'])
 def report(request: Request):
-    user = models.Account(phone_number=account.token_check(request))
+    user = account.token_check(request)
     print(request.body)
     timestamp = datetime.datetime.fromtimestamp(int(int(request.data['timestamp']) / 1000))
     value = str(request.data['value'])
