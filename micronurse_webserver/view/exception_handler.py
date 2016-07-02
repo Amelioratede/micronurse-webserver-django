@@ -13,7 +13,7 @@ def custom_exception_handler(exc, context):
         status = result_code = 404
         message = 'API Not Found'
     elif isinstance(exc, CheckException):
-        status = exc.status_code
+        status = exc.status
         result_code = exc.result_code
         message = exc.detail
     elif isinstance(exc, APIException):

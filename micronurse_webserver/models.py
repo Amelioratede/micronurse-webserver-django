@@ -15,6 +15,7 @@ class Account(models.Model):
         ('O', 'Older'),
         ('G', 'Guardian')
     ))
+    portrait = models.BinaryField(null=True)
     register_date = models.DateField(auto_now_add=True)
 
 

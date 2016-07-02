@@ -3,11 +3,11 @@ import datetime
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.request import Request
-from micronurse_webserver import utils
-from micronurse_webserver.view.v1.iot import account
-from micronurse_webserver.serializer import result_code
-from micronurse_webserver import utils
+
 from micronurse_webserver import models
+from micronurse_webserver import utils
+from micronurse_webserver import result_code
+from micronurse_webserver.view.v1.iot import account
 
 
 @api_view(['POST'])
