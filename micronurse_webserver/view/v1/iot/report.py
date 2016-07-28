@@ -1,12 +1,13 @@
 import datetime
 
+from django.utils.translation import ugettext as _
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.request import Request
 
 from micronurse_webserver import models
-from micronurse_webserver import utils
-from micronurse_webserver import result_code
+from micronurse_webserver.utils import view_utils
+from micronurse_webserver.view import result_code
 from micronurse_webserver.view.v1.iot import account
 
 
@@ -24,4 +25,4 @@ def report(request: Request):
     elif sensor_type == 'thermometer':
         thermometer = models.Thermometer(account=user, timestamp=timestamp, name=name, temperature=float(value))
         thermometer.save()
-    return utils.get_json_response(result_code=result_code.SUCCESS, message='Report Successfully', status=status.HTTP_201_CREATED)
+    return view_utils.get_json_response(result_code=result_code.SUCCESS, message=_('Report successfully'), status=status.HTTP_201_CREATED)
