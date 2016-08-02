@@ -11,7 +11,7 @@ from micronurse_webserver.view import authentication, result_code
 from micronurse_webserver.view.check_exception import CheckException
 
 IOT_TOKEN_VALID_HOURS = 72
-CACHE_KEY_IOT_TOKEN = 'iot_token'
+CACHE_KEY_IOT_TOKEN_PREFIX = 'iot_token_'
 
 
 def token_check(req: Request):
@@ -22,11 +22,11 @@ def token_check(req: Request):
     except:
         raise CheckException(status_code=status.HTTP_401_UNAUTHORIZED, result_code=status.HTTP_401_UNAUTHORIZED,
                              message=_('Invalid token'))
-    cache_token = cache.get(CACHE_KEY_IOT_TOKEN + phone_number)
+    cache_token = cache.get(CACHE_KEY_IOT_TOKEN_PREFIX + phone_number)
     if token != cache_token:
         raise CheckException(status_code=status.HTTP_401_UNAUTHORIZED, result_code=status.HTTP_401_UNAUTHORIZED,
                              message=_('Invalid token'))
-    cache.set(CACHE_KEY_IOT_TOKEN + phone_number, cache_token, IOT_TOKEN_VALID_HOURS * 3600)
+    cache.set(CACHE_KEY_IOT_TOKEN_PREFIX + phone_number, cache_token, IOT_TOKEN_VALID_HOURS * 3600)
     return Account(phone_number=phone_number)
 
 
@@ -39,7 +39,7 @@ def login(request: Request):
         if not account.account_type == 'O':
             raise CheckException(result_code=result_code.IOT_LOGIN_ACCOUNT_TYPE_ERROR, message=_('Only older can login'), status=422)
         token_str = authentication.get_token(account.phone_number)
-        cache.set(CACHE_KEY_IOT_TOKEN + account.phone_number, token_str, IOT_TOKEN_VALID_HOURS * 3600)
+        cache.set(CACHE_KEY_IOT_TOKEN_PREFIX + account.phone_number, token_str, IOT_TOKEN_VALID_HOURS * 3600)
         res = view_utils.get_json_response(result_code=result_code.SUCCESS, message=_('Login successfully'), status=status.HTTP_201_CREATED, token=token_str, nickname=account.nickname)
         return res
     except Account.DoesNotExist:
@@ -49,5 +49,5 @@ def login(request: Request):
 @api_view(['DELETE'])
 def logout(req: Request):
     user = token_check(req)
-    cache.delete(CACHE_KEY_IOT_TOKEN + user.phone_number)
+    cache.delete(CACHE_KEY_IOT_TOKEN_PREFIX + user.phone_number)
     return Response(status=status.HTTP_204_NO_CONTENT)
