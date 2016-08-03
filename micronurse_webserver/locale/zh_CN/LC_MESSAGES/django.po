@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Micro Nurse\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-02 21:03+0800\n"
+"POT-Creation-Date: 2016-08-03 14:29+0800\n"
 "Last-Translator: Zhou Shengyun <GGGZ-1101-28@Live.cn>\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
@@ -51,6 +51,7 @@ msgstr "登录成功"
 #: micronurse_webserver/view/v1/iot/account.py:46
 #: micronurse_webserver/view/v1/mobile/account.py:49
 #: micronurse_webserver/view/v1/mobile/account.py:62
+#: micronurse_webserver/view/v1/mobile/account.py:134
 msgid "User does not exist"
 msgstr "用户不存在"
 
@@ -59,7 +60,7 @@ msgid "Report successfully"
 msgstr "传感器数据报告成功"
 
 #: micronurse_webserver/view/v1/mobile/account.py:81
-#: micronurse_webserver/view/v1/mobile/account.py:116
+#: micronurse_webserver/view/v1/mobile/account.py:141
 msgid "Invalid phone number"
 msgstr "手机号无效"
 
@@ -68,10 +69,12 @@ msgid "This phone number has been registered"
 msgstr "该手机号已被注册"
 
 #: micronurse_webserver/view/v1/mobile/account.py:89
+#: micronurse_webserver/view/v1/mobile/account.py:122
 msgid "Password length is too short or too long"
 msgstr "密码长度过短或过长"
 
 #: micronurse_webserver/view/v1/mobile/account.py:92
+#: micronurse_webserver/view/v1/mobile/account.py:125
 msgid "Illegal password format"
 msgstr "密码格式不合法"
 
@@ -88,21 +91,26 @@ msgid "Illegal account type"
 msgstr "账号类型不合法"
 
 #: micronurse_webserver/view/v1/mobile/account.py:103
+#: micronurse_webserver/view/v1/mobile/account.py:128
 msgid "Incorrect captcha"
 msgstr "验证码不正确"
 
-#: micronurse_webserver/view/v1/mobile/account.py:110
+#: micronurse_webserver/view/v1/mobile/account.py:111
 msgid "Register successfully"
 msgstr "注册成功"
 
-#: micronurse_webserver/view/v1/mobile/account.py:120
+#: micronurse_webserver/view/v1/mobile/account.py:132
+msgid "Reset password successfully"
+msgstr "重置密码成功"
+
+#: micronurse_webserver/view/v1/mobile/account.py:145
 msgid "Sending captcha must be at at least 1 minute interval"
 msgstr "再次发送验证码需至少间隔1分钟"
 
-#: micronurse_webserver/view/v1/mobile/account.py:123
+#: micronurse_webserver/view/v1/mobile/account.py:148
 msgid "Send captcha failed, please try again"
 msgstr "验证码发送失败，请稍后重试"
 
-#: micronurse_webserver/view/v1/mobile/account.py:125
+#: micronurse_webserver/view/v1/mobile/account.py:150
 msgid "Send captcha successfully. It will expire after 30 mins"
 msgstr "验证码已发送，30分钟后失效"

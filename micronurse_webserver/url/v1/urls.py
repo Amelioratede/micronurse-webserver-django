@@ -17,4 +17,5 @@ urlpatterns = [
     url(r'^mobile/account/register', mobile_account.register),
     url(r'^mobile/account/send_captcha', mobile_account.send_phone_captcha),
     url(r'^mobile/account/check_login', mobile_account.check_login),
+    url(r'^mobile/account/reset_password', mobile_account.reset_password),
 ]

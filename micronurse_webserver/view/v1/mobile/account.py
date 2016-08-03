@@ -112,6 +112,30 @@ def register(req: Request):
 
 
 @api_view(['PUT'])
+def reset_password(req: Request):
+    try:
+        account = Account.objects.filter(phone_number=req.data['phone_number']).get()
+
+        password_check_result = check_utils.check_password(password=req.data['new_password'])
+        if password_check_result == check_utils.PASSWORD_LENGTH_ILLEGAL:
+            raise CheckException(result_code=result_code.MOBILE_PASSWORD_LENGTH_ILLEGAL,
+                                 message=_('Password length is too short or too long'))
+        elif password_check_result == check_utils.PASSWORD_FORMAT_ILLEGAL:
+            raise CheckException(result_code=result_code.MOBILE_PASSWORD_FORMAT_ILLEGAL,
+                                 message=_('Illegal password format'))
+
+        if not authentication.check_captcha(phone_num=req.data['phone_number'], captcha_input=req.data['captcha']):
+            raise CheckException(result_code=result_code.MOBILE_PHONE_CAPTCHA_INCORRECT, message=_('Incorrect captcha'))
+
+        account.password = req.data['new_password']
+        account.save()
+        return view_utils.get_json_response(message=_('Reset password successfully'))
+    except Account.DoesNotExist:
+        raise CheckException(result_code=result_code.MOBILE_LOGIN_USER_NOT_EXIST, message=_('User does not exist'),
+                             status=status.HTTP_401_UNAUTHORIZED)
+
+
+@api_view(['PUT'])
 def send_phone_captcha(req: Request):
     if not check_utils.check_phone_num(phone_num=req.data['phone_number']):
         raise CheckException(result_code=result_code.MOBILE_PHONE_NUM_INVALID, message=_('Invalid phone number'))
