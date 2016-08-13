@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Micro Nurse\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-03 14:29+0800\n"
+"POT-Creation-Date: 2016-08-13 14:01+0800\n"
 "Last-Translator: Zhou Shengyun <GGGZ-1101-28@Live.cn>\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
@@ -55,9 +55,17 @@ msgstr "登录成功"
 msgid "User does not exist"
 msgstr "用户不存在"
 
-#: micronurse_webserver/view/v1/iot/report.py:28
+#: micronurse_webserver/view/v1/iot/report.py:71
 msgid "Report successfully"
 msgstr "传感器数据报告成功"
+
+#: micronurse_webserver/view/v1/iot/report.py:73
+msgid "Unsupported sensor type"
+msgstr "不支持的传感器类型"
+
+#: micronurse_webserver/view/v1/iot/report.py:75
+msgid "Unsupported sensor value"
+msgstr "不支持的传感器值"
 
 #: micronurse_webserver/view/v1/mobile/account.py:81
 #: micronurse_webserver/view/v1/mobile/account.py:141

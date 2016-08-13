@@ -22,19 +22,30 @@ class Account(models.Model):
 class Sensor(models.Model):
     account = models.ForeignKey(Account, null=False)
     timestamp = models.DateTimeField(null=False)
-    name = models.CharField(max_length=30, null=False)
 
     class Meta:
         abstract = True
         ordering = ['-timestamp']
-        unique_together = ('account', 'name', 'timestamp')
+        unique_together = ('account', 'timestamp')
 
 
 class Thermometer(Sensor):
+    name = models.CharField(max_length=30, null=False)
     temperature = models.FloatField(null=False)
 
 
+class InfraredTransducer(Sensor):
+    name = models.CharField(max_length=30, null=False)
+    warning = models.BooleanField(null=False)
+
+
+class SmokeTransducer(Sensor):
+    name = models.CharField(max_length=30, null=False)
+    smoke = models.IntegerField(null=False)
+
+
 class Humidometer(Sensor):
+    name = models.CharField(max_length=30, null=False)
     humidity = models.FloatField(null=False)
 
 
@@ -42,3 +53,15 @@ class GPS(Sensor):
     longitude = models.FloatField(null=False)
     latitude = models.FloatField(null=False)
 
+
+class FeverThermometer(Sensor):
+    temperature = models.FloatField(null=False)
+
+
+class PulseTransducer(Sensor):
+    pulse = models.IntegerField(null=False)
+
+
+class Turgoscope(Sensor):
+    low_blood_pressure = models.IntegerField(null=False)
+    high_blood_pressure = models.IntegerField(null=False)

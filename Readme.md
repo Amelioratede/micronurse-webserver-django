@@ -17,6 +17,8 @@ pip install pillow django django-redis-cache django-redis-sessions djangorestfra
 #如果是第一次运行或模型有更改就需要运行如下两个命令
 python3 ./manage.py makemigrations micronurse_webserver
 python3 ./manage.py migrate
+#如果是第一次运行或消息字符串资源有更改就需要运行如下命令
+python3 ./manage.py compilemessages
 # 启动服务器于13000端口
 python3 ./manage.py runserver 0.0.0.0:13000
 ```
