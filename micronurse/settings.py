@@ -32,6 +32,8 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
+APP_NAME = 'micronurse_webserver'
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -39,7 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'micronurse_webserver',
+    APP_NAME,
     'rest_framework'
 ]
 

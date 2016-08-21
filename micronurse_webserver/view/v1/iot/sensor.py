@@ -6,8 +6,9 @@ from rest_framework.decorators import api_view
 from rest_framework.request import Request
 
 from micronurse_webserver import models
-from micronurse_webserver.utils import view_utils
 from micronurse_webserver.view import result_code
+from micronurse_webserver.view import sensor_type as sensor
+from micronurse_webserver.utils import view_utils
 from micronurse_webserver.view.check_exception import CheckException
 from micronurse_webserver.view.v1.iot import account
 
@@ -21,26 +22,26 @@ def report(request: Request):
     name = str(request.data['name'])
     sensor_type = str(request.data['sensor_type']).lower()
     result = result_code.IOT_UNSUPPORTED_SENSOR_TYPE
-    if sensor_type == 'humidometer':
+    if sensor_type == sensor.HUMIDOMETER:
         humidometer = models.Humidometer(account=user, timestamp=timestamp, name=name, humidity=float(value))
         humidometer.save()
         result = result_code.SUCCESS
-    elif sensor_type == 'thermometer':
+    elif sensor_type == sensor.THERMOMETER:
         thermometer = models.Thermometer(account=user, timestamp=timestamp, name=name, temperature=float(value))
         thermometer.save()
         result = result_code.SUCCESS
-    elif sensor_type == 'infrared_transducer':
+    elif sensor_type == sensor.INFRARED_TRANSDUCER:
         if value.lower() == 'warning':
             infrared_transducer = models.InfraredTransducer(account=user, timestamp=timestamp, name=name, warning=True)
             infrared_transducer.save()
             result = result_code.SUCCESS
         else:
             result = result_code.IOT_UNSUPPORTED_SENSOR_VALUE
-    elif sensor_type == 'smoke_transducer':
+    elif sensor_type == sensor.SMOKE_TRANSDUCER:
         smoke_transducer = models.SmokeTransducer(account=user, timestamp=timestamp, name=name, smoke=int(value))
         smoke_transducer.save()
         result = result_code.SUCCESS
-    elif sensor_type == 'gps':
+    elif sensor_type == sensor.GPS:
         location = value.split(sep=',')
         if len(location) != 2:
             result = result_code.IOT_UNSUPPORTED_SENSOR_VALUE
@@ -49,15 +50,15 @@ def report(request: Request):
                              latitude=float(location[1]))
             gps.save()
             result = result_code.SUCCESS
-    elif sensor_type == 'fever_thermometer':
+    elif sensor_type == sensor.FEVER_THERMOMETER:
         fever_thermometer = models.FeverThermometer(account=user, timestamp=timestamp, temperature=float(value))
         fever_thermometer.save()
         result = result_code.SUCCESS
-    elif sensor_type == 'pulse_transducer':
+    elif sensor_type == sensor.PULSE_TRANSDUCER:
         pulse_transducer = models.PulseTransducer(account=user, timestamp=timestamp, pulse=int(value))
         pulse_transducer.save()
         result = result_code.SUCCESS
-    elif sensor_type == 'turgoscope':
+    elif sensor_type == sensor.TURGOSCOPE:
         blood_pressure = value.split(sep='/')
         if len(blood_pressure) != 2:
             result = result_code.IOT_UNSUPPORTED_SENSOR_VALUE

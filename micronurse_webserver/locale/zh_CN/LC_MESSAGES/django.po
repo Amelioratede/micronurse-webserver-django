@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Micro Nurse\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-13 14:01+0800\n"
+"POT-Creation-Date: 2016-08-14 16:23+0800\n"
 "Last-Translator: Zhou Shengyun <GGGZ-1101-28@Live.cn>\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
@@ -55,15 +55,16 @@ msgstr "登录成功"
 msgid "User does not exist"
 msgstr "用户不存在"
 
-#: micronurse_webserver/view/v1/iot/report.py:71
+#: micronurse_webserver/view/v1/iot/sensor.py:71
 msgid "Report successfully"
 msgstr "传感器数据报告成功"
 
-#: micronurse_webserver/view/v1/iot/report.py:73
+#: micronurse_webserver/view/v1/iot/sensor.py:73
+#: micronurse_webserver/view/v1/mobile/sensor.py:35
 msgid "Unsupported sensor type"
 msgstr "不支持的传感器类型"
 
-#: micronurse_webserver/view/v1/iot/report.py:75
+#: micronurse_webserver/view/v1/iot/sensor.py:75
 msgid "Unsupported sensor value"
 msgstr "不支持的传感器值"
 
@@ -122,3 +123,7 @@ msgstr "验证码发送失败，请稍后重试"
 #: micronurse_webserver/view/v1/mobile/account.py:150
 msgid "Send captcha successfully. It will expire after 30 mins"
 msgstr "验证码已发送，30分钟后失效"
+
+#: micronurse_webserver/view/v1/mobile/sensor.py:30
+msgid "Sensor data not found"
+msgstr "未获取到传感器数据"

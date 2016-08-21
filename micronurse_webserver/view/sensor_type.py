@@ -1,0 +1,8 @@
+HUMIDOMETER = 'humidometer'
+THERMOMETER = 'thermometer'
+INFRARED_TRANSDUCER = 'infrared_transducer'
+SMOKE_TRANSDUCER = 'smoke_transducer'
+GPS = 'gps'
+FEVER_THERMOMETER = 'fever_thermometer'
+PULSE_TRANSDUCER = 'pulse_transducer'
+TURGOSCOPE = 'turgoscope'
