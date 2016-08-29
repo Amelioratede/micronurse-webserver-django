@@ -19,9 +19,12 @@ urlpatterns = [
     url(r'^mobile/account/send_captcha', mobile_account.send_phone_captcha),
     url(r'^mobile/account/check_login', mobile_account.check_login),
     url(r'^mobile/account/reset_password', mobile_account.reset_password),
+    url(r'^mobile/account/guardianship', mobile_account.get_guardianship),
 
     url(r'^mobile/sensor/sensor_data/older/latest/(?P<sensor_type>.+)/(?P<limit_num>[0-9]+)',
         sensor.get_sensor_data_older),
+    url(r'^mobile/sensor/sensor_data/guardian/latest/(?P<older_id>[0-9]+)/(?P<sensor_type>.+)/(?P<limit_num>[0-9]+)',
+        sensor.get_sensor_data_guardian),
     url(r'^mobile/sensor/sensor_data/older/latest/(?P<sensor_type>.+)/(?P<name>.+)/(?P<limit_num>[0-9]+)',
         sensor.get_sensor_data_older_by_name),
 ]

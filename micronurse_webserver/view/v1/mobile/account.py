@@ -9,6 +9,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from micronurse.settings import BASE_DIR
+from micronurse_webserver import models
 from micronurse_webserver.models import Account
 from micronurse_webserver.utils import view_utils, check_utils
 from micronurse_webserver.view import authentication, result_code
@@ -33,6 +34,14 @@ def token_check(req: Request):
     return Account(phone_number=phone_number)
 
 
+def guardianship_check(older: Account, guardian: Account):
+    try:
+        models.Guardianship.objects.filter(older=older, guardian=guardian).get()
+    except models.Guardianship.DoesNotExist:
+        raise CheckException(status=status.HTTP_403_FORBIDDEN, result_code=result_code.MOBILE_GUARDIANSHIP_NOT_EXIST,
+                             message=_('Guardianship does not exist'))
+
+
 @api_view(['PUT'])
 def login(request: Request):
     try:
@@ -50,17 +59,41 @@ def login(request: Request):
                              status=status.HTTP_401_UNAUTHORIZED)
 
 
+def get_user_info_json(user: Account, get_phone_num: bool=False):
+    portrait_base64 = base64.b64encode(user.portrait).decode()
+    result = dict(nickname=user.nickname, gender=user.gender, account_type=user.account_type,
+                  portrait=portrait_base64)
+    if get_phone_num:
+        result.update({'phone_number': user.phone_number})
+    return result
+
+
 @api_view(['GET'])
 def get_user_basic_info_by_phone(req: Request, phone_number: str):
     try:
         user = Account.objects.filter(phone_number=phone_number).get()
-        portrait_base64 = base64.b64encode(user.portrait).decode()
-        return view_utils.get_json_response(
-            user=dict(nickname=user.nickname, gender=user.gender, account_type=user.account_type,
-                      portrait=portrait_base64))
+        return view_utils.get_json_response(user=get_user_info_json(user=user))
     except Account.DoesNotExist:
         raise CheckException(result_code=result_code.MOBILE_RESULT_NOT_FOUND, message=_('User does not exist'),
                              status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['GET'])
+def get_guardianship(req: Request):
+    user = token_check(req)
+    user = Account.objects.filter(phone_number=user.phone_number).get()
+    user_list = list()
+    if user.account_type == models.ACCOUNT_TYPE_OLDER:
+        for g in models.Guardianship.objects.filter(older=user):
+            user_list.append(get_user_info_json(user=g.guardian, get_phone_num=True))
+    elif user.account_type == models.ACCOUNT_TYPE_GUARDIAN:
+        for g in models.Guardianship.objects.filter(guardian=user):
+            user_list.append(get_user_info_json(user=g.older, get_phone_num=True))
+
+    if len(user_list) == 0:
+        raise CheckException(result_code=result_code.MOBILE_RESULT_NOT_FOUND, message=_('Guardianship does not exist'),
+                             status=status.HTTP_404_NOT_FOUND)
+    return view_utils.get_json_response(user_list=user_list)
 
 
 @api_view(['DELETE'])
