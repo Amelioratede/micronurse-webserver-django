@@ -132,8 +132,3 @@ msgstr "验证码已发送，30分钟后失效"
 #: micronurse_webserver/view/v1/mobile/sensor.py:85
 msgid "Sensor data not found"
 msgstr "未获取到传感器数据"
-
-#, fuzzy
-#~| msgid "Guardianship does not exist"
-#~ msgid "Guardianship does not exists"
-#~ msgstr "监护关系不存在"
