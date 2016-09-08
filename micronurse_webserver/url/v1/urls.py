@@ -38,4 +38,14 @@ urlpatterns = [
         sensor.get_sensor_data_guardian),
     url(r'^mobile/sensor/sensor_data/guardian/latest/(?P<older_id>[0-9]+)/(?P<sensor_type>.+)/(?P<limit_num>[0-9]+)',
         sensor.get_sensor_data_guardian),
+
+    url(r'^mobile/sensor/warning/older/(?P<start_time>[0-9]+)/(?P<end_time>[0-9]+)/(?P<limit_num>[0-9]+)',
+        sensor.get_sensor_warning_older),
+    url(r'^mobile/sensor/warning/older/(?P<end_time>[0-9]+)/(?P<limit_num>[0-9]+)',
+        sensor.get_sensor_warning_older),
+
+    url(r'^mobile/sensor/warning/guardian/(?P<older_id>[0-9]+)/(?P<start_time>[0-9]+)/(?P<end_time>[0-9]+)/(?P<limit_num>[0-9]+)',
+        sensor.get_sensor_warning_guardian),
+    url(r'^mobile/sensor/warning/guardian/(?P<older_id>[0-9]+)/(?P<end_time>[0-9]+)/(?P<limit_num>[0-9]+)',
+        sensor.get_sensor_warning_guardian),
 ]

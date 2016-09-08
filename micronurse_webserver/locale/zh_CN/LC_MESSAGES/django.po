@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Micro Nurse\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-29 18:13+0800\n"
+"POT-Creation-Date: 2016-09-08 12:19+0800\n"
 "Last-Translator: Zhou Shengyun <GGGZ-1101-28@Live.cn>\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
@@ -60,13 +60,23 @@ msgid "Report successfully"
 msgstr "传感器数据报告成功"
 
 #: micronurse_webserver/view/v1/iot/sensor.py:74
-#: micronurse_webserver/view/v1/mobile/sensor.py:81
+#: micronurse_webserver/view/v1/mobile/sensor.py:97
 msgid "Unsupported sensor type"
 msgstr "不支持的传感器类型"
 
-#: micronurse_webserver/view/v1/iot/sensor.py:76
+#: micronurse_webserver/view/v1/iot/sensor.py:77
 msgid "Unsupported sensor value"
 msgstr "不支持的传感器值"
+
+#: micronurse_webserver/view/v1/iot/sensor.py:83
+#, python-format
+msgid "Monitor Warning-%s"
+msgstr "监控警报-%s"
+
+#: micronurse_webserver/view/v1/iot/sensor.py:87
+#, python-format
+msgid "%s occur warning!"
+msgstr "%s 发出警报"
 
 #: micronurse_webserver/view/v1/mobile/account.py:42
 #: micronurse_webserver/view/v1/mobile/account.py:94
@@ -129,6 +139,10 @@ msgstr "验证码发送失败，请稍后重试"
 msgid "Send captcha successfully. It will expire after 30 mins"
 msgstr "验证码已发送，30分钟后失效"
 
-#: micronurse_webserver/view/v1/mobile/sensor.py:85
+#: micronurse_webserver/view/v1/mobile/sensor.py:101
 msgid "Sensor data not found"
 msgstr "未获取到传感器数据"
+
+#: micronurse_webserver/view/v1/mobile/sensor.py:134
+msgid "Sensor warning not found"
+msgstr "未获取到传感器警报消息"

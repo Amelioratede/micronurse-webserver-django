@@ -1,10 +1,8 @@
 import datetime
-
 from django.utils.translation import ugettext as _
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.request import Request
-
 from micronurse_webserver import models
 from micronurse_webserver.view import result_code
 from micronurse_webserver.view import sensor_type as sensor
@@ -15,6 +13,7 @@ from micronurse_webserver.view.v1.iot import account
 
 @api_view(['POST'])
 def report(request: Request):
+    # TODO: Push warnings for all sensor types.
     user = account.token_check(request)
     print(request.body)
     timestamp = datetime.datetime.fromtimestamp(int(int(request.data['timestamp']) / 1000))
@@ -34,6 +33,7 @@ def report(request: Request):
         if value.lower() == 'warning':
             infrared_transducer = models.InfraredTransducer(account=user, timestamp=timestamp, name=name, warning=True)
             infrared_transducer.save()
+            push_monitor_warning(older=user, sensor_data=infrared_transducer)
             result = result_code.SUCCESS
         else:
             result = result_code.IOT_UNSUPPORTED_SENSOR_VALUE
@@ -73,4 +73,25 @@ def report(request: Request):
     elif result == result_code.IOT_UNSUPPORTED_SENSOR_TYPE:
         raise CheckException(result_code=result_code.IOT_UNSUPPORTED_SENSOR_TYPE, message=_('Unsupported sensor type'))
     elif result == result_code.IOT_UNSUPPORTED_SENSOR_VALUE:
-        raise CheckException(result_code=result_code.IOT_UNSUPPORTED_SENSOR_VALUE, message=_('Unsupported sensor value'))
+        raise CheckException(result_code=result_code.IOT_UNSUPPORTED_SENSOR_VALUE,
+                             message=_('Unsupported sensor value'))
+
+
+def push_monitor_warning(older: models.Account, sensor_data: models.Sensor):
+    # TODO: Support warning messages for all sensor types.
+    older = models.Account.objects.filter(phone_number=older.phone_number).get()
+    title = _('Monitor Warning-%s') % older.nickname
+    older_content = None
+    guardian_content = None
+    if isinstance(sensor_data, models.InfraredTransducer):
+        older_content = guardian_content = _('%s occur warning!') % sensor_data.name
+    if older_content:
+        view_utils.jpush_app_msg(push_user=[older.phone_number], content=older_content, title=title,
+                                 extra=view_utils.get_sensor_warning_json_data(sensor_data=sensor_data))
+    if guardian_content:
+        guardian_list = []
+        for g in models.Guardianship.objects.filter(older=older):
+            guardian_list.append(g.guardian.phone_number)
+        if len(guardian_list) > 0:
+            view_utils.jpush_app_msg(push_user=guardian_list, content=guardian_content, title=title,
+                                     extra=view_utils.get_sensor_warning_json_data(sensor_data=sensor_data))
