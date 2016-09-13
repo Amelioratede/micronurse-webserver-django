@@ -15,7 +15,6 @@ from micronurse_webserver.view.v1.iot import account
 def report(request: Request):
     # TODO: Push warnings for all sensor types.
     user = account.token_check(request)
-    print(request.body)
     timestamp = datetime.datetime.fromtimestamp(int(int(request.data['timestamp']) / 1000))
     value = str(request.data['value'])
     name = str(request.data['name'])

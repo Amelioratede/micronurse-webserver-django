@@ -78,17 +78,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'micronurse.wsgi.application'
 
-#SESSION
-
-SESSION_ENGINE = 'redis_sessions.session'
-SESSION_REDIS_HOST = 'localhost'
-SESSION_REDIS_PORT = 6379
-SESSION_REDIS_PREFIX = 'micronurse_session'
-SESSION_SERIALIZER  = 'django.contrib.sessions.serializers.PickleSerializer'
-
-SESSION_COOKIE_AGE = 60*30
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-
 REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': 'micronurse_webserver.view.exception_handler.custom_exception_handler'
 }
@@ -114,8 +103,12 @@ CACHES = {
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'MicroNurse',
+        'USER': 'MicroNurse',
+        'PASSWORD': '4af8c2909ce0431cae76d45ef740152df8cde9f836b2158a8bae',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
     }
 }
 

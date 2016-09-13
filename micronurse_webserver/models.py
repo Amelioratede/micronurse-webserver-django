@@ -38,7 +38,6 @@ class Sensor(models.Model):
 
     class Meta:
         abstract = True
-        ordering = ['-timestamp']
         unique_together = ('account', 'timestamp')
 
 
@@ -46,36 +45,67 @@ class Thermometer(Sensor):
     name = models.CharField(max_length=30, null=False)
     temperature = models.FloatField(null=False)
 
+    class Meta:
+        ordering = ['-timestamp']
+        db_table = 'thermometer'
+
 
 class InfraredTransducer(Sensor):
     name = models.CharField(max_length=30, null=False)
     warning = models.BooleanField(null=False)
+
+    class Meta:
+        ordering = ['-timestamp']
+        db_table = 'infrared_transducer'
 
 
 class SmokeTransducer(Sensor):
     name = models.CharField(max_length=30, null=False)
     smoke = models.IntegerField(null=False)
 
+    class Meta:
+        ordering = ['-timestamp']
+        db_table = 'smoke_transducer'
+
 
 class Humidometer(Sensor):
     name = models.CharField(max_length=30, null=False)
     humidity = models.FloatField(null=False)
+
+    class Meta:
+        ordering = ['-timestamp']
+        db_table = 'humidometer'
 
 
 class GPS(Sensor):
     longitude = models.FloatField(null=False)
     latitude = models.FloatField(null=False)
 
+    class Meta:
+        ordering = ['-timestamp']
+        db_table = 'gps'
+
 
 class FeverThermometer(Sensor):
     temperature = models.FloatField(null=False)
 
+    class Meta:
+        ordering = ['-timestamp']
+        db_table = 'fever_thermometer'
+
 
 class PulseTransducer(Sensor):
     pulse = models.IntegerField(null=False)
+
+    class Meta:
+        ordering = ['-timestamp']
+        db_table = 'pulse_transducer'
 
 
 class Turgoscope(Sensor):
     low_blood_pressure = models.IntegerField(null=False)
     high_blood_pressure = models.IntegerField(null=False)
 
+    class Meta:
+        ordering = ['-timestamp']
+        db_table = 'turgoscope'
