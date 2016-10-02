@@ -184,6 +184,9 @@ def send_phone_captcha(req: Request):
 
 
 @api_view(['GET'])
-def check_login(req: Request):
-    token_check(req)
-    return Response(status=status.HTTP_204_NO_CONTENT)
+def check_login(req: Request, user_id: str):
+    user = token_check(req)
+    if user.phone_number != user_id:
+        raise CheckException(status=status.HTTP_401_UNAUTHORIZED, result_code=status.HTTP_401_UNAUTHORIZED,
+                             message=_('Token does not match this user.'))
+    return view_utils.get_json_response()

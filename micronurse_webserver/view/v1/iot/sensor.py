@@ -1,24 +1,38 @@
 import datetime
+import json
+import traceback
+from json import JSONDecodeError
+
 from django.utils.translation import ugettext as _
+from paho.mqtt.client import MQTTMessage
+import paho.mqtt.client as mqtt_client
+from micronurse_webserver.utils import mqtt_broker_utils
 from rest_framework import status
-from rest_framework.decorators import api_view
-from rest_framework.request import Request
-from micronurse_webserver import models
 from micronurse_webserver.view import result_code
 from micronurse_webserver.view import sensor_type as sensor
-from micronurse_webserver.utils import view_utils
 from micronurse_webserver.view.check_exception import CheckException
-from micronurse_webserver.view.v1.iot import account
+
+TOPIC_SENSOR_DATA_REPORT_PREFIX = 'sensor_data_report'
 
 
-@api_view(['POST'])
-def report(request: Request):
+def mqtt_sensor_data_report(client: mqtt_client.Client, userdata: dict, message: MQTTMessage):
     # TODO: Push warnings for all sensor types.
-    user = account.token_check(request)
-    timestamp = datetime.datetime.fromtimestamp(int(int(request.data['timestamp']) / 1000))
-    value = str(request.data['value'])
-    name = str(request.data['name'])
-    sensor_type = str(request.data['sensor_type']).lower()
+    user_id = mqtt_broker_utils.parse_topic_user(str(message.topic))
+    if user_id is None:
+        return
+    from micronurse_webserver import models
+    from micronurse_webserver.utils import view_utils
+    user = models.Account(phone_number=user_id)
+    try:
+        payload = json.loads(bytes(message.payload).decode())
+    except JSONDecodeError:
+        traceback.print_exc()
+        return
+
+    timestamp = datetime.datetime.fromtimestamp(int(int(payload['timestamp']) / 1000))
+    value = str(payload['value'])
+    name = str(payload['name'])
+    sensor_type = str(payload['sensor_type']).lower()
     result = result_code.IOT_UNSUPPORTED_SENSOR_TYPE
     if sensor_type == sensor.HUMIDOMETER:
         humidometer = models.Humidometer(account=user, timestamp=timestamp, name=name, humidity=float(value))
@@ -76,7 +90,13 @@ def report(request: Request):
                              message=_('Unsupported sensor value'))
 
 
-def push_monitor_warning(older: models.Account, sensor_data: models.Sensor):
+def push_monitor_warning(older, sensor_data):
+    """
+    :type sensor_data: micronurse_webserver.models.Sensor
+    :type older: micronurse_webserver.models.Account
+    """
+    from micronurse_webserver import models
+    from micronurse_webserver.utils import view_utils
     # TODO: Support warning messages for all sensor types.
     older = models.Account.objects.filter(phone_number=older.phone_number).get()
     title = _('Monitor Warning-%s') % older.nickname

@@ -106,8 +106,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'MicroNurse',
         'USER': 'MicroNurse',
-        'PASSWORD': '4af8c2909ce0431cae76d45ef740152df8cde9f836b2158a8bae',
-        'HOST': '127.0.0.1',
+        'PASSWORD': '7824af5833060c92e8e4wefb7a44c110ee47',
+        'HOST': 'micronurse-webserver',
         'PORT': '3306',
     }
 }
@@ -154,3 +154,7 @@ STATIC_URL = '/static/'
 LOCALE_PATHS = [
     os.path.join(BASE_DIR, "micronurse_webserver/locale")
 ]
+
+MICRONURSE_MQTT_BROKER_CLIENT_ID = 'micronurse_webserver_user:admin'
+MICRONURSE_MQTT_BROKER_USERNAME = 'micronurse_webserver_user:admin'
+MICRONURSE_MQTT_BROKER_PASSWORD = '123456'

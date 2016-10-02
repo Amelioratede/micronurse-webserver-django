@@ -1,5 +1,4 @@
 import datetime
-
 from django.db import connection
 from django.db.models import QuerySet
 from django.utils.translation import ugettext as _

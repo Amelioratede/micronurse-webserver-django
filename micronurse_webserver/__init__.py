@@ -1,8 +1,6 @@
 import os
-
-from django.db.models.signals import post_migrate
+import sys
 from micronurse.settings import BASE_DIR
-
 
 def register_test_account(sender, **kwargs):
     from micronurse_webserver.models import Account
@@ -37,4 +35,8 @@ def register_test_account(sender, **kwargs):
         relation = Guardianship(older=test_older_account, guardian=test_guardian_account)
         relation.save()
 
-post_migrate.connect(register_test_account)
+if sys.argv[1] == 'migrate':
+    from django.db.models.signals import post_migrate
+    post_migrate.connect(register_test_account)
+elif sys.argv[1] == 'runserver':
+    default_app_config = 'micronurse_webserver.apps.MicronurseWebserverConfig'

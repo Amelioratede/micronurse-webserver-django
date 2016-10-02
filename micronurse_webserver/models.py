@@ -23,6 +23,9 @@ class Account(models.Model):
     portrait = models.BinaryField(null=True)
     register_date = models.DateField(auto_now_add=True, null=False)
 
+    class Meta:
+        db_table = 'account'
+
 
 class Guardianship(models.Model):
     older = models.ForeignKey(Account, null=False, related_name='older_id')
@@ -30,6 +33,7 @@ class Guardianship(models.Model):
 
     class Meta:
         unique_together = ('older', 'guardian')
+        db_table = 'guardianship'
 
 
 class Sensor(models.Model):

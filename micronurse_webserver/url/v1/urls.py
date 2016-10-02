@@ -8,7 +8,7 @@ urlpatterns = [
     # IoT
     url(r'^iot/login', iot_account.login),
     url(r'^iot/logout', iot_account.logout),
-    url(r'^iot/report', iot_sensor.report),
+    url(r'^iot/check_login/(?P<user_id>[0-9]+)', iot_account.check_login),
 
     # Mobile
     url(r'^mobile/account/login', mobile_account.login),
@@ -17,7 +17,7 @@ urlpatterns = [
         mobile_account.get_user_basic_info_by_phone),
     url(r'^mobile/account/register', mobile_account.register),
     url(r'^mobile/account/send_captcha', mobile_account.send_phone_captcha),
-    url(r'^mobile/account/check_login', mobile_account.check_login),
+    url(r'^mobile/account/check_login/(?P<user_id>[0-9]+)', mobile_account.check_login),
     url(r'^mobile/account/reset_password', mobile_account.reset_password),
     url(r'^mobile/account/guardianship', mobile_account.get_guardianship),
 
