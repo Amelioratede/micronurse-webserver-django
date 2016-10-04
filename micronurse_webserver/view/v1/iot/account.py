@@ -46,7 +46,8 @@ def login(request: Request):
         res = view_utils.get_json_response(result_code=result_code.SUCCESS, message=_('Login successfully'),
                                            status=status.HTTP_201_CREATED, token=token_str, nickname=account.nickname)
         mqtt_broker_utils.subscribe_topic(
-            topic=iot_sensor_view.TOPIC_SENSOR_DATA_REPORT_PREFIX + '/' + account.phone_number)
+            topic=iot_sensor_view.TOPIC_SENSOR_DATA_REPORT,
+            topic_user=account)
         return res
     except Account.DoesNotExist:
         raise CheckException(result_code=result_code.IOT_LOGIN_USER_NOT_EXIST, message=_('User does not exist'),

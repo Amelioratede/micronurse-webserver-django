@@ -2,6 +2,7 @@ import os
 import sys
 from micronurse.settings import BASE_DIR
 
+
 def register_test_account(sender, **kwargs):
     from micronurse_webserver.models import Account
     from micronurse_webserver.models import Guardianship
@@ -34,6 +35,7 @@ def register_test_account(sender, **kwargs):
         print('Test guardian account created.')
         relation = Guardianship(older=test_older_account, guardian=test_guardian_account)
         relation.save()
+
 
 if sys.argv[1] == 'migrate':
     from django.db.models.signals import post_migrate

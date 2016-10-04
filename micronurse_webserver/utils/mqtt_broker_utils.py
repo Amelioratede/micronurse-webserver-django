@@ -50,11 +50,15 @@ def mqtt_subscribe(topic: str, qos: int, max_retry: int):
         time.sleep(1)
 
 
-def subscribe_topic(topic: str, qos: int = 0, max_retry: int = 5):
+def subscribe_topic(topic: str, topic_user = None, qos: int = 0, max_retry: int = 5):
+    """
+    :type topic_user: micronurse_webserver.models.Account
+    """
     global broker_client
     if broker_client is None:
         return
-    t = threading.Thread(target=mqtt_subscribe, args=(topic, qos, max_retry))
+    full_topic = topic if topic_user is None else topic + '/' + topic_user.phone_number
+    t = threading.Thread(target=mqtt_subscribe, args=(full_topic, qos, max_retry))
     t.setDaemon(True)
     t.start()
 
@@ -75,11 +79,15 @@ def mqtt_publish(topic: str, payload: str, qos: int, retain: bool, max_retry):
         time.sleep(1)
 
 
-def publish_message(topic: str, msg: str, qos: int = 0, retain: bool = False, max_retry: int = 0):
+def publish_message(topic: str, message: str, topic_user = None, qos: int = 0, retain: bool = False, max_retry: int = 5):
+    """
+    :type topic_user: micronurse_webserver.models.Account
+    """
     global broker_client
     if broker_client is None:
         return
-    t = threading.Thread(target=mqtt_publish, args=(topic, msg, qos, retain, max_retry))
+    full_topic = topic if topic_user is None else topic + '/' + topic_user.phone_number
+    t = threading.Thread(target=mqtt_publish, args=(full_topic, message, qos, retain, max_retry))
     t.setDaemon(True)
     t.start()
 
