@@ -15,9 +15,10 @@ class MicronurseWebserverConfig(AppConfig):
         self.shutdown_signal = django.dispatch.Signal()
 
     def ready(self):
-        mqtt_broker_utils.connect_to_broker()
+        mqtt_broker_utils.init_client()
         mqtt_broker_utils.add_message_callback(topic_filter=TOPIC_SENSOR_DATA_REPORT + '/#',
                                                callback=mqtt_sensor_data_report)
+        mqtt_broker_utils.connect_to_broker()
         signal.signal(signal.SIGINT, self.on_server_shutdown)
 
     def on_server_shutdown(self, signal, frame):

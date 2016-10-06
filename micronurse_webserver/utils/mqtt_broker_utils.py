@@ -19,15 +19,17 @@ def on_broker_connect(client: mqtt_client.Client, userdata: dict, flags, rc):
         client.user_data_set({USER_DATA_FIRST_CONNECT: False})
 
 
-def connect_to_broker():
+def init_client():
     global broker_client
-    if broker_client is not None:
-        return
     broker_client = mqtt_client.Client(client_id=settings.MICRONURSE_MQTT_BROKER_CLIENT_ID, clean_session=False)
     broker_client.user_data_set({USER_DATA_FIRST_CONNECT: True})
     broker_client.username_pw_set(username=settings.MICRONURSE_MQTT_BROKER_USERNAME,
                                   password=settings.MICRONURSE_MQTT_BROKER_PASSWORD)
     broker_client.on_connect = on_broker_connect
+
+
+def connect_to_broker():
+    global broker_client
     broker_client.connect(host='micronurse-webserver', port=13883, keepalive=15)
     broker_client.loop_start()
 
@@ -50,7 +52,7 @@ def mqtt_subscribe(topic: str, qos: int, max_retry: int):
         time.sleep(1)
 
 
-def subscribe_topic(topic: str, topic_user = None, qos: int = 0, max_retry: int = 5):
+def subscribe_topic(topic: str, topic_user = None, qos: int = 1, max_retry: int = 5):
     """
     :type topic_user: micronurse_webserver.models.Account
     """
@@ -75,6 +77,7 @@ def mqtt_publish(topic: str, payload: str, qos: int, retain: bool, max_retry):
     for i in range(max_retry + 1):
         result, mid = broker_client.publish(topic=topic, payload=payload, qos=qos, retain=retain)
         if result == mqtt_client.MQTT_ERR_SUCCESS:
+            print('Publish message on topic <' + topic + '> successfully.')
             break
         time.sleep(1)
 

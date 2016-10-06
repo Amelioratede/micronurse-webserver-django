@@ -107,7 +107,7 @@ DATABASES = {
         'NAME': 'MicroNurse',
         'USER': 'MicroNurse',
         'PASSWORD': '7824af5833060c92e8e4wefb7a44c110ee47',
-        'HOST': 'micronurse-webserver',
+        'HOST': 'localhost',
         'PORT': '3306',
     }
 }

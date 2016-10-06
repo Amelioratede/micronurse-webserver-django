@@ -79,4 +79,4 @@ def push_monitor_warning(older, sensor_data):
     # TODO: Support warning messages for all sensor types.
     if isinstance(sensor_data, models.InfraredTransducer):
         msg = _('%s occur warning!') % sensor_data.name
-    mqtt_broker_utils.publish_message(topic=TOPIC_SENSOR_DATA_WARNING, topic_user=older, message=msg)
+    mqtt_broker_utils.publish_message(topic=TOPIC_SENSOR_DATA_WARNING, topic_user=older, message=msg, qos=1)
