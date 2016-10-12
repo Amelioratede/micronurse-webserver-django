@@ -2,15 +2,11 @@ import datetime
 import json
 import traceback
 from json import JSONDecodeError
-
 from django.utils.translation import ugettext as _
 from paho.mqtt.client import MQTTMessage
 import paho.mqtt.client as mqtt_client
 from micronurse_webserver.utils import mqtt_broker_utils
-from rest_framework import status
-from micronurse_webserver.view import result_code
 from micronurse_webserver.view import sensor_type as sensor
-from micronurse_webserver.view.check_exception import CheckException
 
 TOPIC_SENSOR_DATA_REPORT = 'sensor_data_report'
 TOPIC_SENSOR_DATA_WARNING = 'sensor_warning'
@@ -22,7 +18,6 @@ def mqtt_sensor_data_report(client: mqtt_client.Client, userdata: dict, message:
     if user_id is None:
         return
     from micronurse_webserver import models
-    from micronurse_webserver.utils import view_utils
     user = models.Account(phone_number=user_id)
     try:
         payload = json.loads(bytes(message.payload).decode())
@@ -51,7 +46,7 @@ def mqtt_sensor_data_report(client: mqtt_client.Client, userdata: dict, message:
     elif sensor_type == sensor.GPS:
         location = value.split(sep=',')
         if len(location) != 2:
-            result = result_code.IOT_UNSUPPORTED_SENSOR_VALUE
+            return
         else:
             gps = models.GPS(account=user, timestamp=timestamp, longitude=float(location[0]),
                              latitude=float(location[1]))
