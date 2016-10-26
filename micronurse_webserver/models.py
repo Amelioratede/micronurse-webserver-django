@@ -36,6 +36,24 @@ class Guardianship(models.Model):
         db_table = 'guardianship'
 
 
+class FriendsCircle(models.Model):
+    older = models.ForeignKey(Account, null=False, related_name='the_aged_id')
+    friend = models.ForeignKey(Account, null=False,related_name='friend_id')
+
+    class Meta:
+        unique_together = ('older', 'friend')
+        db_table = 'friends_circle'
+
+
+class HomeAddress(models.Model):
+    older = models.ForeignKey(Account, primary_key=True, null=False)
+    longitude = models.FloatField(null=False)
+    latitude = models.FloatField(null=False)
+
+    class Meta:
+        db_table = 'home_address'
+
+
 class Sensor(models.Model):
     account = models.ForeignKey(Account, null=False)
     timestamp = models.DateTimeField(null=False)

@@ -10,7 +10,7 @@ from rest_framework.response import Response
 
 from micronurse.settings import BASE_DIR
 from micronurse_webserver import models
-from micronurse_webserver.models import Account
+from micronurse_webserver.models import Account,HomeAddress
 from micronurse_webserver.utils import view_utils, check_utils
 from micronurse_webserver.view import authentication, result_code
 from micronurse_webserver.view.check_exception import CheckException
@@ -66,6 +66,20 @@ def get_user_info_json(user: Account, get_phone_num: bool=False):
     if get_phone_num:
         result.update({'phone_number': user.phone_number})
     return result
+
+
+@api_view(['GET'])
+def get_friendship(request: Request):
+    user = token_check(request)
+    user = Account.objects.filter(phone_number=user.phone_number).get()
+    user_list = list()
+    if user.account_type == models.ACCOUNT_TYPE_OLDER:
+        for g in models.FriendsCircle.objects.filter(older=user):
+            user_list.append(get_user_info_json(user=g.friend, get_phone_num=True))
+    if len(user_list) == 0:
+        raise CheckException(result_code=result_code.MOBILE_RESULT_NOT_FOUND, message=_('Friendship does not exist'),
+                             status=status.HTTP_404_NOT_FOUND)
+    return view_utils.get_json_response(user_list=user_list)
 
 
 @api_view(['GET'])
@@ -142,6 +156,61 @@ def register(req: Request):
                           portrait=read_default_portrait())
     new_account.save()
     return view_utils.get_json_response(status=status.HTTP_201_CREATED, message=_('Register successfully'))
+
+
+@api_view(['POST'])
+def set_home_address(request:Request):
+    user = token_check(request)
+    user = Account.objects.filter(phone_number=user.phone_number).get()
+    longitude = request.data['home_longitude']
+    latitude = request.data['home_latitude']
+    if longitude >= 73.0 and longitude <= 135.0 and latitude >= 3 and latitude <= 53:
+        if user.account_type == models.ACCOUNT_TYPE_OLDER:
+            new_home_address = HomeAddress(longitude=longitude,latitude=latitude,
+                                           older=user)
+            new_home_address.save()
+            return view_utils.get_json_response(status=status.HTTP_201_CREATED,
+                                                message=_("Set home address successfully"))
+        if user.account_type == models.ACCOUNT_TYPE_GUARDIAN:
+            raise CheckException(result_code=result_code.MOBILE_HOME_ADDRESS_SETTING_PERMISSIONS_LIMITED,
+                                 message=_("Only older can set home address"))
+    else:
+        raise CheckException(result_code=result_code.MOBILE_ADDRESS_ILLEGAL,
+                             message=_("Address is out of scope"))
+
+
+@api_view(['GET'])
+def get_home_address_from_older(request: Request):
+    user = token_check(request)
+    try:
+        home_address = HomeAddress.objects.filter(older=user).get()
+        longitude = home_address.longitude
+        latitude = home_address.latitude
+        return view_utils.get_json_response(latitude=latitude, longitude=longitude)
+    except HomeAddress.DoesNotExist:
+        raise CheckException(result_code=result_code.MOBILE_HOME_ADDRESS_NOT_EXIST, message=_('Home address not exist'),
+                             status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['GET'])
+def get_home_address_from_guardian(request: Request, user_id:str):
+    user = token_check(request)
+    count_older = 0
+    for g in models.Guardianship.objects.filter(guardian=user):
+        if g.older.phone_number == user_id:
+            count_older += 1
+            try:
+                home_address = HomeAddress.objects.filter(older=g.older).get()
+                longitude = home_address.longitude
+                latitude = home_address.latitude
+                return view_utils.get_json_response(latitude=latitude, longitude=longitude)
+            except HomeAddress.DoesNotExist:
+                raise CheckException(result_code=result_code.MOBILE_HOME_ADDRESS_NOT_EXIST,
+                                     message=_('Home address not exist'),status=status.HTTP_404_NOT_FOUND)
+
+    if count_older == 0:
+        raise CheckException(result_code=result_code.MOBILE_RESULT_NOT_FOUND, message=_('Guardianship does not exist'),
+                             status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['PUT'])
