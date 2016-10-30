@@ -164,7 +164,7 @@ def set_home_address(request:Request):
     user = Account.objects.filter(phone_number=user.phone_number).get()
     longitude = request.data['home_longitude']
     latitude = request.data['home_latitude']
-    if longitude >= 73.0 and longitude <= 135.0 and latitude >= 3 and latitude <= 53:
+    if 73.0 <= longitude <= 135.0 and 3 <= latitude <= 53:
         if user.account_type == models.ACCOUNT_TYPE_OLDER:
             new_home_address = HomeAddress(longitude=longitude,latitude=latitude,
                                            older=user)
@@ -175,7 +175,7 @@ def set_home_address(request:Request):
             raise CheckException(result_code=result_code.MOBILE_HOME_ADDRESS_SETTING_PERMISSIONS_LIMITED,
                                  message=_("Only older can set home address"))
     else:
-        raise CheckException(result_code=result_code.MOBILE_ADDRESS_ILLEGAL,
+        raise CheckException(result_code=result_code.MOBILE_HOME_ADDRESS_ILLEGAL,
                              message=_("Address is out of scope"))
 
 
@@ -193,24 +193,18 @@ def get_home_address_from_older(request: Request):
 
 
 @api_view(['GET'])
-def get_home_address_from_guardian(request: Request, user_id:str):
+def get_home_address_from_guardian(request: Request, older_id:str):
     user = token_check(request)
-    count_older = 0
-    for g in models.Guardianship.objects.filter(guardian=user):
-        if g.older.phone_number == user_id:
-            count_older += 1
-            try:
-                home_address = HomeAddress.objects.filter(older=g.older).get()
-                longitude = home_address.longitude
-                latitude = home_address.latitude
-                return view_utils.get_json_response(latitude=latitude, longitude=longitude)
-            except HomeAddress.DoesNotExist:
-                raise CheckException(result_code=result_code.MOBILE_HOME_ADDRESS_NOT_EXIST,
-                                     message=_('Home address not exist'),status=status.HTTP_404_NOT_FOUND)
-
-    if count_older == 0:
-        raise CheckException(result_code=result_code.MOBILE_RESULT_NOT_FOUND, message=_('Guardianship does not exist'),
-                             status=status.HTTP_404_NOT_FOUND)
+    older = Account(phone_number=older_id)
+    guardianship_check(guardian=user, older=older)
+    try:
+        home_address = HomeAddress.objects.filter(older=older).get()
+        longitude = home_address.longitude
+        latitude = home_address.latitude
+        return view_utils.get_json_response(latitude=latitude, longitude=longitude)
+    except HomeAddress.DoesNotExist:
+        raise CheckException(result_code=result_code.MOBILE_HOME_ADDRESS_NOT_EXIST,
+                             message=_('Home address not exist'), status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['PUT'])

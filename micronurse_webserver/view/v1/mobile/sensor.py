@@ -9,7 +9,6 @@ from micronurse_webserver.models import Account
 from micronurse_webserver.utils import view_utils
 from micronurse_webserver.utils.view_utils import get_sensor_json_data
 from micronurse_webserver.view import result_code
-from micronurse_webserver.view import sensor_type as sensor
 from micronurse_webserver.view.check_exception import CheckException
 from micronurse_webserver.view.v1.mobile import account
 
@@ -46,7 +45,7 @@ def get_sensor_data(user: Account, sensor_type: str, limit_num: int = -1, start_
                     end_time: datetime = None, name: str = None):
     result_list = []
     cursor = connection.cursor()
-    if sensor_type == sensor.THERMOMETER:
+    if sensor_type == models.Thermometer.sensor_type:
         if name:
             result_list = get_sensor_limited_data(sensor_type=models.Thermometer, user=user, limit_num=limit_num,
                                                   start_time=start_time, end_time=end_time, name=name)
@@ -55,7 +54,7 @@ def get_sensor_data(user: Account, sensor_type: str, limit_num: int = -1, start_
             for q in cursor.fetchall():
                 result_list = get_sensor_limited_data(sensor_type=models.Thermometer, user=user, limit_num=limit_num,
                                                       start_time=start_time, end_time=end_time, name=q[0])
-    elif sensor_type == sensor.HUMIDOMETER:
+    elif sensor_type == models.Humidometer.sensor_type:
         if name:
             result_list = get_sensor_limited_data(sensor_type=models.Humidometer, user=user, limit_num=limit_num,
                                                   start_time=start_time, end_time=end_time, name=name)
@@ -64,7 +63,7 @@ def get_sensor_data(user: Account, sensor_type: str, limit_num: int = -1, start_
             for q in cursor.fetchall():
                 result_list = get_sensor_limited_data(sensor_type=models.Humidometer, user=user, limit_num=limit_num,
                                                       start_time=start_time, end_time=end_time, name=q[0])
-    elif sensor_type == sensor.SMOKE_TRANSDUCER:
+    elif sensor_type == models.SmokeTransducer.sensor_type:
         if name:
             result_list = get_sensor_limited_data(sensor_type=models.SmokeTransducer, user=user, limit_num=limit_num,
                                                   start_time=start_time, end_time=end_time, name=name)
@@ -74,7 +73,7 @@ def get_sensor_data(user: Account, sensor_type: str, limit_num: int = -1, start_
                 result_list = get_sensor_limited_data(sensor_type=models.SmokeTransducer, user=user,
                                                       limit_num=limit_num,
                                                       start_time=start_time, end_time=end_time, name=q[0])
-    elif sensor_type == sensor.INFRARED_TRANSDUCER:
+    elif sensor_type == models.InfraredTransducer.sensor_type:
         if name:
             result_list = get_sensor_limited_data(sensor_type=models.InfraredTransducer, user=user, limit_num=limit_num,
                                                   start_time=start_time, end_time=end_time, name=name)
@@ -84,16 +83,16 @@ def get_sensor_data(user: Account, sensor_type: str, limit_num: int = -1, start_
                 result_list = get_sensor_limited_data(sensor_type=models.SmokeTransducer, user=user,
                                                       limit_num=limit_num,
                                                       start_time=start_time, end_time=end_time, name=q[0])
-    elif sensor_type == sensor.FEVER_THERMOMETER:
+    elif sensor_type == models.FeverThermometer.sensor_type:
         result_list = get_sensor_limited_data(sensor_type=models.FeverThermometer, user=user, limit_num=limit_num,
                                               start_time=start_time, end_time=end_time, name=None)
-    elif sensor_type == sensor.PULSE_TRANSDUCER:
+    elif sensor_type == models.PulseTransducer.sensor_type:
         result_list = get_sensor_limited_data(sensor_type=models.PulseTransducer, user=user, limit_num=limit_num,
                                               start_time=start_time, end_time=end_time, name=None)
-    elif sensor_type == sensor.TURGOSCOPE:
+    elif sensor_type == models.Turgoscope.sensor_type:
         result_list = get_sensor_limited_data(sensor_type=models.Turgoscope, user=user, limit_num=limit_num,
                                               start_time=start_time, end_time=end_time, name=None)
-    elif sensor_type == sensor.GPS:
+    elif sensor_type == models.GPS.sensor_type:
         result_list = get_sensor_limited_data(sensor_type=models.GPS, user=user, limit_num=limit_num,
                                               start_time=start_time, end_time=end_time, name=None)
     else:

@@ -1,7 +1,6 @@
 import datetime
 from django.http import JsonResponse
 from micronurse_webserver import models
-from micronurse_webserver.view import sensor_type as sensor
 
 
 def get_json_response(result_code: int = 0, message: str = '', status: int = 200, **kwargs):
@@ -41,20 +40,20 @@ def get_sensor_json_data(sensor_data: models.Sensor):
 
 def get_sensor_warning_json_data(sensor_data: models.Sensor):
     if isinstance(sensor_data, models.Thermometer):
-        sensor_type = sensor.THERMOMETER
+        sensor_type = models.Thermometer.sensor_type
     elif isinstance(sensor_data, models.Humidometer):
-        sensor_type = sensor.HUMIDOMETER
+        sensor_type = models.Humidometer.sensor_type
     elif isinstance(sensor_data, models.SmokeTransducer):
-        sensor_type = sensor.SMOKE_TRANSDUCER
+        sensor_type = models.SmokeTransducer.sensor_type
     elif isinstance(sensor_data, models.InfraredTransducer):
-        sensor_type = sensor.INFRARED_TRANSDUCER
+        sensor_type = models.InfraredTransducer.sensor_type
     elif isinstance(sensor_data, models.FeverThermometer):
-        sensor_type = sensor.FEVER_THERMOMETER
+        sensor_type = models.FeverThermometer.sensor_type
     elif isinstance(sensor_data, models.PulseTransducer):
-        sensor_type = sensor.PULSE_TRANSDUCER
+        sensor_type = models.PulseTransducer.sensor_type
     elif isinstance(sensor_data, models.Turgoscope):
-        sensor_type = sensor.TURGOSCOPE
+        sensor_type = models.Turgoscope.sensor_type
     elif isinstance(sensor_data, models.GPS):
-        sensor_type = sensor.GPS
+        sensor_type = models.GPS.sensor_type
 
     return {'sensor_type': sensor_type, 'sensor_data': get_sensor_json_data(sensor_data)}

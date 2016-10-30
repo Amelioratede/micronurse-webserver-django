@@ -9,6 +9,7 @@ urlpatterns = [
     url(r'^iot/login', iot_account.login),
     url(r'^iot/logout', iot_account.logout),
     url(r'^iot/check_login/(?P<user_id>[0-9]+)', iot_account.check_login),
+    url(r'^iot/account_info', iot_account.get_account_info),
 
     # Mobile
     url(r'^mobile/account/login', mobile_account.login),
@@ -21,9 +22,8 @@ urlpatterns = [
     url(r'^mobile/account/reset_password', mobile_account.reset_password),
     url(r'^mobile/account/guardianship', mobile_account.get_guardianship),
     url(r'^mobile/account/set_home_address',mobile_account.set_home_address),
-    url(r'^mobile/account/get_home_address_from_older',mobile_account.get_home_address_from_older),
-    url(r'^mobile/account/get_home_address_from_guardian/(?P<user_id>[0-9]+)',
-        mobile_account.get_home_address_from_guardian),
+    url(r'^mobile/account/home_address/older',mobile_account.get_home_address_from_older),
+    url(r'^mobile/account/home_address/guardian/(?P<older_id>[0-9]+)', mobile_account.get_home_address_from_guardian),
 
     url(r'^mobile/sensor/sensor_data/older/latest/(?P<sensor_type>.+)/(?P<name>.+)/(?P<start_time>[0-9]+)/(?P<end_time>[0-9]+)/(?P<limit_num>[0-9]+)',
         sensor.get_sensor_data_older),

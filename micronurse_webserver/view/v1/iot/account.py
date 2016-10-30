@@ -44,8 +44,7 @@ def login(request: Request):
         token_str = authentication.get_token(account.phone_number)
         cache.set(CACHE_KEY_IOT_TOKEN_PREFIX + account.phone_number, token_str, IOT_TOKEN_VALID_HOURS * 3600)
         res = view_utils.get_json_response(result_code=result_code.SUCCESS, message=_('Login successfully'),
-                                           status=status.HTTP_201_CREATED, token=token_str, nickname=account.nickname)
-        mqtt_broker_utils.subscribe_topic(topic=iot_sensor_view.TOPIC_SENSOR_DATA_REPORT, topic_user=account, qos=1)
+                                           status=status.HTTP_201_CREATED, token=token_str)
         return res
     except Account.DoesNotExist:
         raise CheckException(result_code=result_code.IOT_LOGIN_USER_NOT_EXIST, message=_('User does not exist'),
@@ -65,4 +64,12 @@ def check_login(req: Request, user_id: str):
     if user.phone_number != user_id:
         raise CheckException(status=status.HTTP_401_UNAUTHORIZED, result_code=status.HTTP_401_UNAUTHORIZED,
                              message=_('Token does not match this user.'))
+    mqtt_broker_utils.subscribe_topic(topic=iot_sensor_view.TOPIC_SENSOR_DATA_REPORT, topic_user=user, qos=1)
     return view_utils.get_json_response()
+
+
+@api_view(['GET'])
+def get_account_info(req: Request):
+    user = token_check(req)
+    user = Account.objects.filter(phone_number=user.phone_number).get();
+    return view_utils.get_json_response(nickname=user.nickname)

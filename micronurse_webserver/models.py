@@ -46,7 +46,7 @@ class FriendsCircle(models.Model):
 
 
 class HomeAddress(models.Model):
-    older = models.ForeignKey(Account, primary_key=True, null=False)
+    older = models.OneToOneField(Account, primary_key=True)
     longitude = models.FloatField(null=False)
     latitude = models.FloatField(null=False)
 
@@ -64,6 +64,7 @@ class Sensor(models.Model):
 
 
 class Thermometer(Sensor):
+    sensor_type = 'thermometer'
     name = models.CharField(max_length=30, null=False)
     temperature = models.FloatField(null=False)
 
@@ -73,6 +74,7 @@ class Thermometer(Sensor):
 
 
 class InfraredTransducer(Sensor):
+    sensor_type = 'infrared_transducer'
     name = models.CharField(max_length=30, null=False)
     warning = models.BooleanField(null=False)
 
@@ -82,6 +84,7 @@ class InfraredTransducer(Sensor):
 
 
 class SmokeTransducer(Sensor):
+    sensor_type = 'smoke_transducer'
     name = models.CharField(max_length=30, null=False)
     smoke = models.IntegerField(null=False)
 
@@ -91,6 +94,7 @@ class SmokeTransducer(Sensor):
 
 
 class Humidometer(Sensor):
+    sensor_type = 'humidometer'
     name = models.CharField(max_length=30, null=False)
     humidity = models.FloatField(null=False)
 
@@ -100,6 +104,7 @@ class Humidometer(Sensor):
 
 
 class GPS(Sensor):
+    sensor_type = 'gps'
     longitude = models.FloatField(null=False)
     latitude = models.FloatField(null=False)
 
@@ -109,6 +114,7 @@ class GPS(Sensor):
 
 
 class FeverThermometer(Sensor):
+    sensor_type = 'fever_thermometer'
     temperature = models.FloatField(null=False)
 
     class Meta:
@@ -117,6 +123,7 @@ class FeverThermometer(Sensor):
 
 
 class PulseTransducer(Sensor):
+    sensor_type = 'pulse_transducer'
     pulse = models.IntegerField(null=False)
 
     class Meta:
@@ -125,6 +132,7 @@ class PulseTransducer(Sensor):
 
 
 class Turgoscope(Sensor):
+    sensor_type = 'turgoscope'
     low_blood_pressure = models.IntegerField(null=False)
     high_blood_pressure = models.IntegerField(null=False)
 
