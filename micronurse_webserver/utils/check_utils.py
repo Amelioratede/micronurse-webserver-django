@@ -25,7 +25,7 @@ def check_abnormal_sensor_value(sensor_data: models.Sensor):
         if sensor_data.humidity >= 90.0 or sensor_data.humidity <= 10.0:
             return True
     elif isinstance(sensor_data, models.Thermometer):
-        if sensor_data.timestamp >= 54.0:
+        if sensor_data.temperature >= 54.0:
             return True
     elif isinstance(sensor_data, models.SmokeTransducer):
         if sensor_data.smoke >= 300:
