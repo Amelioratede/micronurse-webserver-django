@@ -1,5 +1,6 @@
 from micronurse_webserver.view import result_code
 from micronurse_webserver import models
+from geopy.distance import vincenty
 
 def check_phone_num(phone_num: str):
     for c in phone_num:
@@ -40,4 +41,10 @@ def check_abnormal_sensor_value(sensor_data: models.Sensor):
         if (sensor_data.low_blood_pressure <= 60 or sensor_data.low_blood_pressure >= 95) and \
                 (sensor_data.high_blood_pressure <= 90 or sensor_data.high_blood_pressure >= 160):
             return True
+    elif isinstance(sensor_data, models.GPS):
+        for ha in models.HomeAddress.objects.filter(older=sensor_data.account):
+            home_addr = (ha.latitude, ha.longitude)
+            current_addr = (sensor_data.latitude, sensor_data.longitude)
+            if float(vincenty(home_addr, current_addr).meters) > 3000:
+                return True
     return False

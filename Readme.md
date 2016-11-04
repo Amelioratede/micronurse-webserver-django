@@ -9,7 +9,7 @@ The web server of Micro Nurse IoT application. The version of Python used by thi
 ② Install all needed Python modules via pip3:
 
 ```bash
-pip3 install pillow django django-redis-cache djangorestframework hiredis mysqlclient paho-mqtt
+pip3 install pillow django django-redis-cache djangorestframework hiredis mysqlclient paho-mqtt geopy
 ```
 
 ③ Init database as root user: 
