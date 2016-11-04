@@ -1,33 +1,58 @@
 # micronurse-webserver-django
 
-## 配置与启动
+The web server of Micro Nurse IoT application. The version of Python used by this project is Python 3.
 
-①安装MySql、Redis、Python3
+## Build and Start
 
-②安装必要的python模块：
+① Install database MySQL and Redis, and start them.
+
+② Install all needed Python modules via pip3:
 
 ```bash
 pip3 install pillow django django-redis-cache djangorestframework hiredis mysqlclient paho-mqtt
 ```
 
-③初始化数据库：以root用户身份运行init_db.sql
+③ Init database as root user: 
+
+Execute the following command in the root directory of project:
 
 ```bash
 mysql -uroot -p -e "source init_db.sql"
 ```
 
-④启动，在项目根目录下运行如下命令：
+④ Start server: 
+
+Execute the following command in the root directory of project:
 
 ```bash
-#如果是第一次运行或模型有更改就需要运行如下两个命令
+# Run the following three commands if first starting server.
 python3 ./manage.py makemigrations micronurse_webserver
 python3 ./manage.py migrate
-#如果是第一次运行或消息字符串资源有更改就需要运行如下命令
 python3 ./manage.py compilemessages
-# 启动服务器于13000端口
+# Start server at port 13000
 python3 ./manage.py runserver 0.0.0.0:13000 --noreload
 ```
 
-## 相关技术文档
+##  Notice
+
+### Model Modify
+
+If the model has been modified, the following commands should be executed to apply the modification to the database:
+
+```bash
+python3 ./manage.py makemigrations micronurse_webserver
+python3 ./manage.py migrate
+```
+
+### Message Resource Update
+
+If the message resource(django.po) has been modified, the following command should be executed to compile the updated message resource:
+
+```shell
+python3 ./manage.py migrate
+```
+
+## Relative Technical Documents
+
 + Django:[docs.djangoproject.com](https://docs.djangoproject.com) 
 + Django REST Framwork:[www.django-rest-framework.org](http://www.django-rest-framework.org) 

@@ -19,7 +19,7 @@ CACHE_KEY_MOBILE_TOKEN_PREFIX = 'mobile_token_'
 MOBILE_TOKEN_VALID_HOURS = 120
 
 
-def token_check(req: Request):
+def token_check(req: Request, permission_limit: str = None):
     try:
         token = req.META['HTTP_AUTH_TOKEN']
         phone_number = authentication.parse_token(token)
@@ -31,7 +31,14 @@ def token_check(req: Request):
         raise CheckException(status=status.HTTP_401_UNAUTHORIZED, result_code=status.HTTP_401_UNAUTHORIZED,
                              message=_('Invalid token'))
     cache.set(CACHE_KEY_MOBILE_TOKEN_PREFIX + phone_number, cache_token, MOBILE_TOKEN_VALID_HOURS * 3600)
-    return Account(phone_number=phone_number)
+    if permission_limit is not None:
+        user = Account.objects.filter(phone_number=phone_number).get()
+        if user.account_type != permission_limit:
+            raise CheckException(status=status.HTTP_403_FORBIDDEN, result_code=status.HTTP_403_FORBIDDEN,
+                                 message=_('Permission denied'))
+    else:
+        user = Account(phone_number=phone_number)
+    return user
 
 
 def guardianship_check(older: Account, guardian: Account):
@@ -59,34 +66,11 @@ def login(request: Request):
                              status=status.HTTP_401_UNAUTHORIZED)
 
 
-def get_user_info_json(user: Account, get_phone_num: bool=False):
-    portrait_base64 = base64.b64encode(user.portrait).decode()
-    result = dict(nickname=user.nickname, gender=user.gender, account_type=user.account_type,
-                  portrait=portrait_base64)
-    if get_phone_num:
-        result.update({'phone_number': user.phone_number})
-    return result
-
-
-@api_view(['GET'])
-def get_friendship(request: Request):
-    user = token_check(request)
-    user = Account.objects.filter(phone_number=user.phone_number).get()
-    user_list = list()
-    if user.account_type == models.ACCOUNT_TYPE_OLDER:
-        for g in models.FriendsCircle.objects.filter(older=user):
-            user_list.append(get_user_info_json(user=g.friend, get_phone_num=True))
-    if len(user_list) == 0:
-        raise CheckException(result_code=result_code.MOBILE_RESULT_NOT_FOUND, message=_('Friendship does not exist'),
-                             status=status.HTTP_404_NOT_FOUND)
-    return view_utils.get_json_response(user_list=user_list)
-
-
 @api_view(['GET'])
 def get_user_basic_info_by_phone(req: Request, phone_number: str):
     try:
         user = Account.objects.filter(phone_number=phone_number).get()
-        return view_utils.get_json_response(user=get_user_info_json(user=user))
+        return view_utils.get_json_response(user=view_utils.get_user_info_json(user=user))
     except Account.DoesNotExist:
         raise CheckException(result_code=result_code.MOBILE_RESULT_NOT_FOUND, message=_('User does not exist'),
                              status=status.HTTP_404_NOT_FOUND)
@@ -94,15 +78,15 @@ def get_user_basic_info_by_phone(req: Request, phone_number: str):
 
 @api_view(['GET'])
 def get_guardianship(req: Request):
-    user = token_check(req)
+    user = token_check(req=req)
     user = Account.objects.filter(phone_number=user.phone_number).get()
     user_list = list()
     if user.account_type == models.ACCOUNT_TYPE_OLDER:
         for g in models.Guardianship.objects.filter(older=user):
-            user_list.append(get_user_info_json(user=g.guardian, get_phone_num=True))
+            user_list.append(view_utils.get_user_info_json(user=g.guardian, get_phone_num=True))
     elif user.account_type == models.ACCOUNT_TYPE_GUARDIAN:
         for g in models.Guardianship.objects.filter(guardian=user):
-            user_list.append(get_user_info_json(user=g.older, get_phone_num=True))
+            user_list.append(view_utils.get_user_info_json(user=g.older, get_phone_num=True))
 
     if len(user_list) == 0:
         raise CheckException(result_code=result_code.MOBILE_RESULT_NOT_FOUND, message=_('Guardianship does not exist'),
@@ -112,7 +96,7 @@ def get_guardianship(req: Request):
 
 @api_view(['DELETE'])
 def logout(req: Request):
-    user = token_check(req)
+    user = token_check(req=req)
     cache.delete(CACHE_KEY_MOBILE_TOKEN_PREFIX + user.phone_number)
     return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -160,7 +144,7 @@ def register(req: Request):
 
 @api_view(['POST'])
 def set_home_address(request:Request):
-    user = token_check(request)
+    user = token_check(req=request, permission_limit=models.ACCOUNT_TYPE_OLDER)
     user = Account.objects.filter(phone_number=user.phone_number).get()
     longitude = request.data['home_longitude']
     latitude = request.data['home_latitude']
@@ -181,7 +165,7 @@ def set_home_address(request:Request):
 
 @api_view(['GET'])
 def get_home_address_from_older(request: Request):
-    user = token_check(request)
+    user = token_check(req=request, permission_limit=models.ACCOUNT_TYPE_OLDER)
     try:
         home_address = HomeAddress.objects.filter(older=user).get()
         longitude = home_address.longitude
@@ -194,7 +178,7 @@ def get_home_address_from_older(request: Request):
 
 @api_view(['GET'])
 def get_home_address_from_guardian(request: Request, older_id:str):
-    user = token_check(request)
+    user = token_check(req=request, permission_limit=models.ACCOUNT_TYPE_GUARDIAN)
     older = Account(phone_number=older_id)
     guardianship_check(guardian=user, older=older)
     try:
@@ -248,7 +232,7 @@ def send_phone_captcha(req: Request):
 
 @api_view(['GET'])
 def check_login(req: Request, user_id: str):
-    user = token_check(req)
+    user = token_check(req=req)
     if user.phone_number != user_id:
         raise CheckException(status=status.HTTP_401_UNAUTHORIZED, result_code=status.HTTP_401_UNAUTHORIZED,
                              message=_('Token does not match this user.'))

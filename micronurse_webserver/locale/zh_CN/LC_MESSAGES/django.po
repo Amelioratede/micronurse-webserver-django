@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Micro Nurse\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-30 14:49+0800\n"
+"POT-Creation-Date: 2016-10-31 20:58+0800\n"
 "Last-Translator: Zhou Shengyun <GGGZ-1101-28@Live.cn>\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
@@ -35,7 +35,7 @@ msgid "Invalid token"
 msgstr "Token无效或过期"
 
 #: micronurse_webserver/view/v1/iot/account.py:39
-#: micronurse_webserver/view/v1/mobile/account.py:51
+#: micronurse_webserver/view/v1/mobile/account.py:58
 msgid "Incorrect password"
 msgstr "密码不正确"
 
@@ -44,19 +44,19 @@ msgid "Only older can login"
 msgstr "只有老人可以登录"
 
 #: micronurse_webserver/view/v1/iot/account.py:46
-#: micronurse_webserver/view/v1/mobile/account.py:54
+#: micronurse_webserver/view/v1/mobile/account.py:61
 msgid "Login successfully"
 msgstr "登录成功"
 
 #: micronurse_webserver/view/v1/iot/account.py:50
-#: micronurse_webserver/view/v1/mobile/account.py:58
-#: micronurse_webserver/view/v1/mobile/account.py:91
-#: micronurse_webserver/view/v1/mobile/account.py:230
+#: micronurse_webserver/view/v1/mobile/account.py:65
+#: micronurse_webserver/view/v1/mobile/account.py:75
+#: micronurse_webserver/view/v1/mobile/account.py:214
 msgid "User does not exist"
 msgstr "用户不存在"
 
 #: micronurse_webserver/view/v1/iot/account.py:66
-#: micronurse_webserver/view/v1/mobile/account.py:254
+#: micronurse_webserver/view/v1/mobile/account.py:238
 msgid "Token does not match this user."
 msgstr "Token与该用户不匹配"
 
@@ -77,87 +77,99 @@ msgstr "脉搏出现异常"
 msgid "Abnormal blood pressure!"
 msgstr "血压出现异常"
 
-#: micronurse_webserver/view/v1/mobile/account.py:42
-#: micronurse_webserver/view/v1/mobile/account.py:108
+#: micronurse_webserver/view/v1/mobile/account.py:38
+msgid "Permission denied"
+msgstr ""
+
+#: micronurse_webserver/view/v1/mobile/account.py:49
+#: micronurse_webserver/view/v1/mobile/account.py:92
 msgid "Guardianship does not exist"
 msgstr "监护关系不存在"
 
-#: micronurse_webserver/view/v1/mobile/account.py:80
-msgid "Friendship does not exist"
-msgstr "好友关系不存在"
-
-#: micronurse_webserver/view/v1/mobile/account.py:128
-#: micronurse_webserver/view/v1/mobile/account.py:237
+#: micronurse_webserver/view/v1/mobile/account.py:112
+#: micronurse_webserver/view/v1/mobile/account.py:221
 msgid "Invalid phone number"
 msgstr "手机号无效"
 
-#: micronurse_webserver/view/v1/mobile/account.py:131
+#: micronurse_webserver/view/v1/mobile/account.py:115
 msgid "This phone number has been registered"
 msgstr "该手机号已被注册"
 
-#: micronurse_webserver/view/v1/mobile/account.py:136
-#: micronurse_webserver/view/v1/mobile/account.py:218
+#: micronurse_webserver/view/v1/mobile/account.py:120
+#: micronurse_webserver/view/v1/mobile/account.py:202
 msgid "Password length is too short or too long"
 msgstr "密码长度过短或过长"
 
-#: micronurse_webserver/view/v1/mobile/account.py:139
-#: micronurse_webserver/view/v1/mobile/account.py:221
+#: micronurse_webserver/view/v1/mobile/account.py:123
+#: micronurse_webserver/view/v1/mobile/account.py:205
 msgid "Illegal password format"
 msgstr "密码格式不合法"
 
-#: micronurse_webserver/view/v1/mobile/account.py:143
+#: micronurse_webserver/view/v1/mobile/account.py:127
 msgid "This nickname has been registered"
 msgstr "该昵称已被注册"
 
-#: micronurse_webserver/view/v1/mobile/account.py:146
+#: micronurse_webserver/view/v1/mobile/account.py:130
 msgid "Illegal gender"
 msgstr "性别不合法"
 
-#: micronurse_webserver/view/v1/mobile/account.py:148
+#: micronurse_webserver/view/v1/mobile/account.py:132
 msgid "Illegal account type"
 msgstr "账号类型不合法"
 
-#: micronurse_webserver/view/v1/mobile/account.py:150
-#: micronurse_webserver/view/v1/mobile/account.py:224
+#: micronurse_webserver/view/v1/mobile/account.py:134
+#: micronurse_webserver/view/v1/mobile/account.py:208
 msgid "Incorrect captcha"
 msgstr "验证码不正确"
 
-#: micronurse_webserver/view/v1/mobile/account.py:158
+#: micronurse_webserver/view/v1/mobile/account.py:142
 msgid "Register successfully"
 msgstr "注册成功"
 
-#: micronurse_webserver/view/v1/mobile/account.py:173
+#: micronurse_webserver/view/v1/mobile/account.py:157
 msgid "Set home address successfully"
 msgstr "成功设置家庭地址"
 
-#: micronurse_webserver/view/v1/mobile/account.py:176
+#: micronurse_webserver/view/v1/mobile/account.py:160
 msgid "Only older can set home address"
 msgstr "仅限老人账号能设置家庭地址"
 
-#: micronurse_webserver/view/v1/mobile/account.py:179
+#: micronurse_webserver/view/v1/mobile/account.py:163
 msgid "Address is out of scope"
 msgstr "地址超出范围"
 
+#: micronurse_webserver/view/v1/mobile/account.py:175
 #: micronurse_webserver/view/v1/mobile/account.py:191
-#: micronurse_webserver/view/v1/mobile/account.py:207
 msgid "Home address not exist"
 msgstr "未设置家庭地址"
 
-#: micronurse_webserver/view/v1/mobile/account.py:228
+#: micronurse_webserver/view/v1/mobile/account.py:212
 msgid "Reset password successfully"
 msgstr "重置密码成功"
 
-#: micronurse_webserver/view/v1/mobile/account.py:241
+#: micronurse_webserver/view/v1/mobile/account.py:225
 msgid "Sending captcha must be at at least 1 minute interval"
 msgstr "再次发送验证码需至少间隔1分钟"
 
-#: micronurse_webserver/view/v1/mobile/account.py:244
+#: micronurse_webserver/view/v1/mobile/account.py:228
 msgid "Send captcha failed, please try again"
 msgstr "验证码发送失败，请稍后重试"
 
-#: micronurse_webserver/view/v1/mobile/account.py:246
+#: micronurse_webserver/view/v1/mobile/account.py:230
 msgid "Send captcha successfully. It will expire after 30 mins"
 msgstr "验证码已发送，30分钟后失效"
+
+#: micronurse_webserver/view/v1/mobile/friend_juan.py:24
+msgid "Friend list is empty"
+msgstr "好友列表为空"
+
+#: micronurse_webserver/view/v1/mobile/friend_juan.py:35
+msgid "Post moment successfully"
+msgstr "发布动态成功"
+
+#: micronurse_webserver/view/v1/mobile/friend_juan.py:55
+msgid "No friend moment"
+msgstr "暂无好友动态"
 
 #: micronurse_webserver/view/v1/mobile/sensor.py:100
 msgid "Unsupported sensor type"
@@ -170,12 +182,3 @@ msgstr "未获取到传感器数据"
 #: micronurse_webserver/view/v1/mobile/sensor.py:139
 msgid "Sensor warning not found"
 msgstr "未获取到传感器警报消息"
-
-#~ msgid "Report successfully"
-#~ msgstr "传感器数据报告成功"
-
-#~ msgid "Unsupported sensor value"
-#~ msgstr "不支持的传感器值"
-
-#~ msgid "Monitor Warning-%s"
-#~ msgstr "监控警报-%s"

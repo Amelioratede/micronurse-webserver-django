@@ -1,6 +1,6 @@
 from django.conf.urls import url, include
 from micronurse_webserver.view.v1.iot import account as iot_account
-from micronurse_webserver.view.v1.iot import sensor as iot_sensor
+from micronurse_webserver.view.v1.mobile import friend_juan
 from micronurse_webserver.view.v1.mobile import account as mobile_account
 from micronurse_webserver.view.v1.mobile import sensor
 
@@ -53,4 +53,10 @@ urlpatterns = [
     url(r'^mobile/sensor/warning/guardian/(?P<older_id>[0-9]+)/(?P<end_time>[0-9]+)/(?P<limit_num>[0-9]+)',
         sensor.get_sensor_warning_guardian),
 
+    url(r'^mobile/friend_juan/friendship', friend_juan.get_friendship),
+    url(r'^mobile/friend_juan/post_moment', friend_juan.post_moment),
+
+    url(r'^mobile/friend_juan/moment/(?P<start_time>[0-9]+)/(?P<end_time>[0-9]+)/(?P<limit_num>[0-9]+)', friend_juan.get_moments),
+    url(r'^mobile/friend_juan/moment/(?P<end_time>[0-9]+)/(?P<limit_num>[0-9]+)', friend_juan.get_moments),
+url(r'^mobile/friend_juan/moment/(?P<limit_num>[0-9]+)', friend_juan.get_moments),
 ]

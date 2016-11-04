@@ -1,3 +1,4 @@
+import base64
 import datetime
 from django.http import JsonResponse
 from micronurse_webserver import models
@@ -57,3 +58,20 @@ def get_sensor_warning_json_data(sensor_data: models.Sensor):
         sensor_type = models.GPS.sensor_type
 
     return {'sensor_type': sensor_type, 'sensor_data': get_sensor_json_data(sensor_data)}
+
+
+def get_user_info_json(user: models.Account, get_phone_num: bool=False):
+    portrait_base64 = base64.b64encode(user.portrait).decode()
+    result = dict(nickname=user.nickname, gender=user.gender, account_type=user.account_type,
+                  portrait=portrait_base64)
+    if get_phone_num:
+        result.update({'phone_number': user.phone_number})
+    return result
+
+
+def get_moment_json(moment: models.FriendMoment):
+    return {
+        'user_id': moment.older_id,
+        'text_content': moment.text_content,
+        'timestamp': int(moment.timestamp.timestamp() * 1000)
+    }

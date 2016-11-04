@@ -109,7 +109,7 @@ def get_sensor_data(user: Account, sensor_type: str, limit_num: int = -1, start_
 @api_view(['GET'])
 def get_sensor_data_older(req: Request, sensor_type: str, limit_num: int, start_time: int = -1, end_time: int = -1,
                           name: str = None):
-    user = account.token_check(req)
+    user = account.token_check(req=req, permission_limit=models.ACCOUNT_TYPE_OLDER)
     return get_sensor_data(user=user, sensor_type=sensor_type.lower(), limit_num=int(limit_num), name=name,
                            start_time=view_utils.get_datetime(int(start_time)),
                            end_time=view_utils.get_datetime(int(end_time)))
@@ -118,7 +118,7 @@ def get_sensor_data_older(req: Request, sensor_type: str, limit_num: int, start_
 @api_view(['GET'])
 def get_sensor_data_guardian(req: Request, older_id: str, sensor_type: str, limit_num: int, start_time: int = -1,
                              end_time: int = -1, name: str = None):
-    user = account.token_check(req)
+    user = account.token_check(req=req, permission_limit=models.ACCOUNT_TYPE_GUARDIAN)
     older = Account(phone_number=older_id)
     account.guardianship_check(older=older, guardian=user)
     return get_sensor_data(user=older, sensor_type=sensor_type.lower(), limit_num=int(limit_num), name=name,
@@ -142,7 +142,7 @@ def get_sensor_warning(user: Account, start_time: datetime = None, end_time: dat
 
 @api_view(['GET'])
 def get_sensor_warning_older(req: Request, start_time: int = -1, end_time: int = -1, limit_num: int = -1):
-    user = account.token_check(req)
+    user = account.token_check(req=req, permission_limit=models.ACCOUNT_TYPE_OLDER)
     return get_sensor_warning(user=user, limit_num=int(limit_num),
                               start_time=view_utils.get_datetime(int(start_time)),
                               end_time=view_utils.get_datetime(int(end_time)))
@@ -151,7 +151,7 @@ def get_sensor_warning_older(req: Request, start_time: int = -1, end_time: int =
 @api_view(['GET'])
 def get_sensor_warning_guardian(req: Request, older_id: str, start_time: int = -1, end_time: int = -1,
                                 limit_num: int = -1):
-    user = account.token_check(req)
+    user = account.token_check(req=req, permission_limit=models.ACCOUNT_TYPE_GUARDIAN)
     older = Account(phone_number=older_id)
     account.guardianship_check(older=older, guardian=user)
     return get_sensor_warning(user=older, limit_num=int(limit_num),

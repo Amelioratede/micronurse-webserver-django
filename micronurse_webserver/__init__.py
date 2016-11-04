@@ -6,20 +6,45 @@ from micronurse.settings import BASE_DIR
 def register_test_account(sender, **kwargs):
     from micronurse_webserver.models import Account
     from micronurse_webserver.models import Guardianship
+    from micronurse_webserver.models import Friendship
+
     test_older_account = Account.objects.filter(phone_number='123456')
-    if not test_older_account:
+    test_older_friend_account = Account.objects.filter(phone_number='233333')
+    if not test_older_account or not test_older_friend_account:
         img_file = open(os.path.join(BASE_DIR, 'micronurse_webserver/default-portrait'), 'rb')
         img_bin = bytes(img_file.read())
-        test_older_account = Account(phone_number='123456',
-                                     password='123456',
-                                     gender='M',
-                                     account_type='O',
-                                     nickname='Test-老人',
-                                     portrait=img_bin)
-        test_older_account.save()
-        print('Test older account created.')
+        if not test_older_account:
+            test_older_account = Account(phone_number='123456',
+                                         password='123456',
+                                         gender='M',
+                                         account_type='O',
+                                         nickname='Test-老人',
+                                         portrait=img_bin)
+            test_older_account.save()
+            print('Test older account created.')
+        else:
+            test_older_account = test_older_account.get()
+
+        if not test_older_friend_account:
+            test_older_friend_account = Account(phone_number='233333',
+                                         password='123456',
+                                         gender='F',
+                                         account_type='O',
+                                         nickname='Test-老人好友',
+                                         portrait=img_bin)
+            test_older_friend_account.save()
+            print('Test older friend account created.')
+        else:
+            test_older_friend_account = test_older_friend_account.get()
+
+        friendship = Friendship(older=test_older_account, friend=test_older_friend_account)
+        friendship.save()
+        friendship = Friendship(older=test_older_friend_account, friend=test_older_account)
+        friendship.save()
+        print('Test older friendship created.')
     else:
         test_older_account = test_older_account.get()
+
 
     test_guardian_account = Account.objects.filter(phone_number='666666')
     if not test_guardian_account:
@@ -35,6 +60,7 @@ def register_test_account(sender, **kwargs):
         print('Test guardian account created.')
         relation = Guardianship(older=test_older_account, guardian=test_guardian_account)
         relation.save()
+        print('Test guardianship created.')
 
 
 if sys.argv[1] == 'migrate':
