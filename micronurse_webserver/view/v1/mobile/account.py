@@ -72,7 +72,7 @@ def get_user_basic_info_by_phone(req: Request, phone_number: str):
         user = Account.objects.filter(phone_number=phone_number).get()
         return view_utils.get_json_response(user=view_utils.get_user_info_json(user=user))
     except Account.DoesNotExist:
-        raise CheckException(result_code=result_code.MOBILE_RESULT_NOT_FOUND, message=_('User does not exist'),
+        raise CheckException(result_code=result_code.MOBILE_USER_INFO_NOT_FOUND, message=_('User does not exist'),
                              status=status.HTTP_404_NOT_FOUND)
 
 
@@ -89,7 +89,7 @@ def get_guardianship(req: Request):
             user_list.append(view_utils.get_user_info_json(user=g.older, get_phone_num=True))
 
     if len(user_list) == 0:
-        raise CheckException(result_code=result_code.MOBILE_RESULT_NOT_FOUND, message=_('Guardianship does not exist'),
+        raise CheckException(result_code=result_code.MOBILE_GUARDIANSHIP_NOT_EXIST, message=_('Guardianship does not exist'),
                              status=status.HTTP_404_NOT_FOUND)
     return view_utils.get_json_response(user_list=user_list)
 
