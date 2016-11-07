@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Micro Nurse\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-05 00:19+0800\n"
+"POT-Creation-Date: 2016-11-07 14:03+0800\n"
 "Last-Translator: Zhou Shengyun <GGGZ-1101-28@Live.cn>\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
@@ -60,24 +60,24 @@ msgstr "用户不存在"
 msgid "Token does not match this user."
 msgstr "Token与该用户不匹配"
 
-#: micronurse_webserver/view/v1/iot/sensor.py:129
+#: micronurse_webserver/view/v1/iot/sensor.py:137
 #, python-format
 msgid "%s occur warning!"
 msgstr "%s 发出警报"
 
-#: micronurse_webserver/view/v1/iot/sensor.py:131
+#: micronurse_webserver/view/v1/iot/sensor.py:139
 msgid "Abnormal body temperature!"
 msgstr "体温出现异常"
 
-#: micronurse_webserver/view/v1/iot/sensor.py:133
+#: micronurse_webserver/view/v1/iot/sensor.py:141
 msgid "Abnormal pulse!"
 msgstr "脉搏出现异常"
 
-#: micronurse_webserver/view/v1/iot/sensor.py:135
+#: micronurse_webserver/view/v1/iot/sensor.py:143
 msgid "Abnormal blood pressure!"
 msgstr "血压出现异常"
 
-#: micronurse_webserver/view/v1/iot/sensor.py:137
+#: micronurse_webserver/view/v1/iot/sensor.py:145
 msgid "Too far way from home!"
 msgstr "离家距离过大，偏离常住区域"
 
@@ -167,11 +167,15 @@ msgstr "验证码已发送，30分钟后失效"
 msgid "Friend list is empty"
 msgstr "好友列表为空"
 
-#: micronurse_webserver/view/v1/mobile/friend_juan.py:35
+#: micronurse_webserver/view/v1/mobile/friend_juan.py:33
+msgid "Empty moment content"
+msgstr "动态内容为空"
+
+#: micronurse_webserver/view/v1/mobile/friend_juan.py:37
 msgid "Post moment successfully"
 msgstr "发布动态成功"
 
-#: micronurse_webserver/view/v1/mobile/friend_juan.py:55
+#: micronurse_webserver/view/v1/mobile/friend_juan.py:57
 msgid "No friend moment"
 msgstr "暂无好友动态"
 

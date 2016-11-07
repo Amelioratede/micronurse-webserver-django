@@ -29,6 +29,8 @@ def get_friendship(request: Request):
 @api_view(['POST'])
 def post_moment(req: Request):
     user = account.token_check(req=req, permission_limit=models.ACCOUNT_TYPE_OLDER)
+    if len(req.data['text_content']) <= 0:
+        raise CheckException(result_code=result_code.MOBILE_FRIEND_JUAN_EMPTY_MOMENT, message=_('Empty moment content'))
     moment = models.FriendMoment(older=user, timestamp=datetime.datetime.fromtimestamp(time.time()),
                                  text_content=str(req.data['text_content']))
     moment.save()

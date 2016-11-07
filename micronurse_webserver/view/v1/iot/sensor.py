@@ -36,7 +36,7 @@ def mqtt_sensor_data_report(client: mqtt_client.Client, userdata: dict, message:
         if 'name' in payload.keys():
             name = str(payload['name'])
         sensor_type = str(payload['sensor_type']).lower()
-        if sensor_type == models.Humidometer.sensor_type:
+        if sensor_type == models.Humidometer.sensor_type and 0 <= float(value) <= 100:
             humidometer = models.Humidometer(account=user, timestamp=timestamp, name=name, humidity=float(value))
             humidometer.save()
             if check_utils.check_abnormal_sensor_value(sensor_data=humidometer):
@@ -52,7 +52,7 @@ def mqtt_sensor_data_report(client: mqtt_client.Client, userdata: dict, message:
                                                                 warning=True)
                 infrared_transducer.save()
                 push_monitor_warning(older=user, sensor_data=infrared_transducer)
-        elif sensor_type == models.SmokeTransducer.sensor_type:
+        elif sensor_type == models.SmokeTransducer.sensor_type and int(value) >= 0:
             smoke_transducer = models.SmokeTransducer(account=user, timestamp=timestamp, name=name,
                                                       smoke=int(value))
             smoke_transducer.save()
@@ -63,6 +63,8 @@ def mqtt_sensor_data_report(client: mqtt_client.Client, userdata: dict, message:
             if len(location) != 2:
                 return
             else:
+                if not (-180 <= float(location[0]) <= 180 and -90 <= float(location[1]) <= 90):
+                    return
                 gps = models.GPS(account=user, timestamp=timestamp, longitude=float(location[0]),
                                  latitude=float(location[1]))
                 gps.save()
@@ -71,11 +73,15 @@ def mqtt_sensor_data_report(client: mqtt_client.Client, userdata: dict, message:
                 else:
                     reset_suppress_warning(older=user, sensor_type=models.GPS.sensor_type)
         elif sensor_type == models.FeverThermometer.sensor_type:
+            if float(value) < 25 or float(value) > 50:
+                return
             fever_thermometer = models.FeverThermometer(account=user, timestamp=timestamp, temperature=float(value))
             fever_thermometer.save()
             if check_utils.check_abnormal_sensor_value(sensor_data=fever_thermometer):
                 push_monitor_warning(older=user, sensor_data=fever_thermometer)
         elif sensor_type == models.PulseTransducer.sensor_type:
+            if int(value) <= 0 or int(value) > 300:
+                return
             pulse_transducer = models.PulseTransducer(account=user, timestamp=timestamp, pulse=int(value))
             pulse_transducer.save()
             if check_utils.check_abnormal_sensor_value(sensor_data=pulse_transducer):
@@ -83,6 +89,8 @@ def mqtt_sensor_data_report(client: mqtt_client.Client, userdata: dict, message:
         elif sensor_type == models.Turgoscope.sensor_type:
             blood_pressure = value.split(sep='/')
             if len(blood_pressure) == 2:
+                if int(blood_pressure[0]) <= 0 or int(blood_pressure[1]) <= 0:
+                    return
                 turgoscope = models.Turgoscope(account=user, timestamp=timestamp,
                                                low_blood_pressure=int(blood_pressure[0]),
                                                high_blood_pressure=int(blood_pressure[1]))
