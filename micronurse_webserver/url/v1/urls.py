@@ -58,5 +58,5 @@ urlpatterns = [
 
     url(r'^mobile/friend_juan/moment/(?P<start_time>[0-9]+)/(?P<end_time>[0-9]+)/(?P<limit_num>[0-9]+)', friend_juan.get_moments),
     url(r'^mobile/friend_juan/moment/(?P<end_time>[0-9]+)/(?P<limit_num>[0-9]+)', friend_juan.get_moments),
-url(r'^mobile/friend_juan/moment/(?P<limit_num>[0-9]+)', friend_juan.get_moments),
+    url(r'^mobile/friend_juan/moment/(?P<limit_num>[0-9]+)', friend_juan.get_moments),
 ]

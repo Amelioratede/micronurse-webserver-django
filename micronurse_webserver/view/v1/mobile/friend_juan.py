@@ -46,9 +46,9 @@ def get_moments(req: Request, start_time: int = -1, end_time: int = -1, limit_nu
         friend_limit |= Q(older=fs.friend)
     moment_query_set = models.FriendMoment.objects.filter(friend_limit)
     if int(start_time) >= 0:
-        moment_query_set.filter(timestamp__gte=view_utils.get_datetime(int(start_time)))
+        moment_query_set = moment_query_set.filter(timestamp__gte=view_utils.get_datetime(int(start_time)))
     if int(end_time) >= 0:
-        moment_query_set.filter(timestamp__lte=view_utils.get_datetime(int(end_time)))
+        moment_query_set = moment_query_set.filter(timestamp__lte=view_utils.get_datetime(int(end_time)))
     if int(limit_num) > 0:
         moment_query_set = moment_query_set[:int(limit_num)]
     for fm in moment_query_set:
