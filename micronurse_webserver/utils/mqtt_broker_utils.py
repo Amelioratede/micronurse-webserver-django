@@ -73,16 +73,17 @@ def on_broker_connect(client: mqtt_client.Client, userdata: dict, flags, rc):
 
 def init_client():
     global broker_client
-    broker_client = mqtt_client.Client(client_id=settings.MICRONURSE_MQTT_BROKER_CLIENT_ID, clean_session=False)
+    broker_client = mqtt_client.Client(client_id=settings.MICRONURSE_MQTT_BROKER['CLIENT_ID'], clean_session=False)
     broker_client.user_data_set({USER_DATA_FIRST_CONNECT: True})
-    broker_client.username_pw_set(username=settings.MICRONURSE_MQTT_BROKER_USERNAME,
-                                  password=settings.MICRONURSE_MQTT_BROKER_PASSWORD)
+    broker_client.username_pw_set(username=settings.MICRONURSE_MQTT_BROKER['USERNAME'],
+                                  password=settings.MICRONURSE_MQTT_BROKER['PASSWORD'])
     broker_client.on_connect = on_broker_connect
 
 
 def connect_to_broker():
     global broker_client
-    broker_client.connect(host='micronurse-webserver', port=13883, keepalive=15)
+    broker_client.connect(host=settings.MICRONURSE_MQTT_BROKER['HOST'], port=int(settings.MICRONURSE_MQTT_BROKER['PORT']),
+                          keepalive=15)
     broker_client.loop_start()
     t = threading.Thread(target=broker_loop)
     t.setDaemon(True)
@@ -105,7 +106,7 @@ def subscribe_topic(topic: str, topic_user = None, qos: int = 1, max_retry: int 
     global mqtt_queue
     if broker_client is None or mqtt_queue is None:
         return
-    full_topic = topic if topic_user is None else topic + '/' + topic_user.phone_number
+    full_topic = topic if topic_user is None else topic + '/' + str(topic_user.user_id)
     mqtt_queue.put(
         item={KEY_MQTT_ACTION: MQTT_ACTION_SUBSCRIPTION, KEY_MQTT_TOPIC: full_topic, KEY_MQTT_QOS: qos},
         block=True,
@@ -128,7 +129,7 @@ def publish_message(topic: str, message: str, topic_user = None, qos: int = 0, r
     global mqtt_queue
     if broker_client is None or mqtt_queue is None:
         return
-    full_topic = topic if topic_user is None else topic + '/' + topic_user.phone_number
+    full_topic = topic if topic_user is None else topic + '/' + str(topic_user.user_id)
     mqtt_queue.put(
         item={KEY_MQTT_ACTION: MQTT_ACTION_PUBLISH, KEY_MQTT_TOPIC: full_topic,
               KEY_MQTT_PAYLOAD: message, KEY_MQTT_QOS: qos, KEY_MQTT_RETAIN: retain},

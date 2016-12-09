@@ -1,4 +1,3 @@
-import base64
 import os
 
 from django.core.cache import cache
@@ -22,22 +21,22 @@ MOBILE_TOKEN_VALID_HOURS = 120
 def token_check(req: Request, permission_limit: str = None):
     try:
         token = req.META['HTTP_AUTH_TOKEN']
-        phone_number = authentication.parse_token(token)
+        user_id = authentication.parse_token(token)
     except Exception:
         raise CheckException(status=status.HTTP_401_UNAUTHORIZED, result_code=status.HTTP_401_UNAUTHORIZED,
                              message=_('Invalid token'))
-    cache_token = cache.get(CACHE_KEY_MOBILE_TOKEN_PREFIX + phone_number)
+    cache_token = cache.get(CACHE_KEY_MOBILE_TOKEN_PREFIX + str(user_id))
     if token != cache_token:
         raise CheckException(status=status.HTTP_401_UNAUTHORIZED, result_code=status.HTTP_401_UNAUTHORIZED,
                              message=_('Invalid token'))
-    cache.set(CACHE_KEY_MOBILE_TOKEN_PREFIX + phone_number, cache_token, MOBILE_TOKEN_VALID_HOURS * 3600)
+    cache.set(CACHE_KEY_MOBILE_TOKEN_PREFIX + str(user_id), cache_token, MOBILE_TOKEN_VALID_HOURS * 3600)
     if permission_limit is not None:
-        user = Account.objects.filter(phone_number=phone_number).get()
+        user = Account.objects.filter(user_id=user_id).get()
         if user.account_type != permission_limit:
             raise CheckException(status=status.HTTP_403_FORBIDDEN, result_code=status.HTTP_403_FORBIDDEN,
                                  message=_('Permission denied'))
     else:
-        user = Account(phone_number=phone_number)
+        user = Account(user_id=user_id)
     return user
 
 
@@ -56,8 +55,8 @@ def login(request: Request):
         if not account.password == request.data['password']:
             raise CheckException(result_code=result_code.MOBILE_LOGIN_INCORRECT_PASSWORD,
                                  message=_('Incorrect password'), status=status.HTTP_401_UNAUTHORIZED)
-        token_str = authentication.get_token(account.phone_number)
-        cache.set(CACHE_KEY_MOBILE_TOKEN_PREFIX + account.phone_number, token_str, MOBILE_TOKEN_VALID_HOURS * 3600)
+        token_str = authentication.get_token(account.user_id)
+        cache.set(CACHE_KEY_MOBILE_TOKEN_PREFIX + str(account.user_id), token_str, MOBILE_TOKEN_VALID_HOURS * 3600)
         res = view_utils.get_json_response(result_code=result_code.SUCCESS, message=_('Login successfully'),
                                            status=status.HTTP_201_CREATED, token=token_str)
         return res
@@ -79,7 +78,7 @@ def get_user_basic_info_by_phone(req: Request, phone_number: str):
 @api_view(['GET'])
 def get_guardianship(req: Request):
     user = token_check(req=req)
-    user = Account.objects.filter(phone_number=user.phone_number).get()
+    user = Account.objects.filter(user_id=user.user_id).get()
     user_list = list()
     if user.account_type == models.ACCOUNT_TYPE_OLDER:
         for g in models.Guardianship.objects.filter(older=user):
@@ -97,7 +96,7 @@ def get_guardianship(req: Request):
 @api_view(['DELETE'])
 def logout(req: Request):
     user = token_check(req=req)
-    cache.delete(CACHE_KEY_MOBILE_TOKEN_PREFIX + user.phone_number)
+    cache.delete(CACHE_KEY_MOBILE_TOKEN_PREFIX + str(user.user_id))
     return Response(status=status.HTTP_204_NO_CONTENT)
 
 
@@ -145,7 +144,7 @@ def register(req: Request):
 @api_view(['POST'])
 def set_home_address(request:Request):
     user = token_check(req=request, permission_limit=models.ACCOUNT_TYPE_OLDER)
-    user = Account.objects.filter(phone_number=user.phone_number).get()
+    user = Account.objects.filter(user_id=user.user_id).get()
     longitude = request.data['home_longitude']
     latitude = request.data['home_latitude']
     if 73.0 <= longitude <= 135.0 and 3 <= latitude <= 53:
@@ -177,9 +176,9 @@ def get_home_address_from_older(request: Request):
 
 
 @api_view(['GET'])
-def get_home_address_from_guardian(request: Request, older_id:str):
+def get_home_address_from_guardian(request: Request, older_id: str):
     user = token_check(req=request, permission_limit=models.ACCOUNT_TYPE_GUARDIAN)
-    older = Account(phone_number=older_id)
+    older = Account(user_id=int(older_id))
     guardianship_check(guardian=user, older=older)
     try:
         home_address = HomeAddress.objects.filter(older=older).get()
@@ -233,7 +232,7 @@ def send_phone_captcha(req: Request):
 @api_view(['GET'])
 def check_login(req: Request, user_id: str):
     user = token_check(req=req)
-    if user.phone_number != user_id:
+    if str(user.user_id) != user_id:
         raise CheckException(status=status.HTTP_401_UNAUTHORIZED, result_code=status.HTTP_401_UNAUTHORIZED,
                              message=_('Token does not match this user.'))
     return view_utils.get_json_response()

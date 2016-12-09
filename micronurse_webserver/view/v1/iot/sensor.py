@@ -22,7 +22,7 @@ def mqtt_sensor_data_report(client: mqtt_client.Client, userdata: dict, message:
     user_id = mqtt_broker_utils.parse_topic_user(str(message.topic))
     if user_id is None:
         return
-    user = models.Account(phone_number=user_id)
+    user = models.Account(user_id=user_id)
     try:
         payload = json.loads(bytes(message.payload).decode())
     except JSONDecodeError:
@@ -106,7 +106,7 @@ def reset_suppress_warning(older, sensor_type: str):
     """
      :type older: micronurse_webserver.models.Account
     """
-    cache_key = CACHE_KEY_SUPPRESS_WARNING_PREFIX + '/' + older.phone_number + '/' + sensor_type
+    cache_key = CACHE_KEY_SUPPRESS_WARNING_PREFIX + '/' + older.user_id + '/' + sensor_type
     cache.delete(cache_key)
 
 
@@ -118,7 +118,7 @@ def push_monitor_warning(older, sensor_data):
     # TODO: Support warning messages for all sensor types.
     from micronurse_webserver import models
     if not isinstance(sensor_data, models.InfraredTransducer):
-        cache_key = CACHE_KEY_SUPPRESS_WARNING_PREFIX + '/' + older.phone_number + '/' + sensor_data.sensor_type
+        cache_key = CACHE_KEY_SUPPRESS_WARNING_PREFIX + '/' + older.user_id + '/' + sensor_data.sensor_type
         if isinstance(sensor_data, models.GPS):
             warning_time = 0
             if cache.get(cache_key):

@@ -9,7 +9,8 @@ ACCOUNT_TYPE_GUARDIAN = 'G'
 
 
 class Account(models.Model):
-    phone_number = models.CharField(max_length=20, primary_key=True, null=False)
+    user_id = models.AutoField(primary_key=True)
+    phone_number = models.CharField(max_length=20, unique=True, null=False)
     password = models.CharField(max_length=20, null=False)
     nickname = models.CharField(max_length=25, unique=True, null=False)
     gender = models.CharField(max_length=1, choices=(

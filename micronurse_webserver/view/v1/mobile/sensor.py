@@ -50,7 +50,7 @@ def get_sensor_data(user: Account, sensor_type: str, limit_num: int = -1, start_
             result_list = get_sensor_limited_data(sensor_type=models.Thermometer, user=user, limit_num=limit_num,
                                                   start_time=start_time, end_time=end_time, name=name)
         else:
-            cursor.execute('SELECT name FROM thermometer WHERE account_id=%s GROUP BY name', [user.phone_number])
+            cursor.execute('SELECT name FROM thermometer WHERE account_id=%s GROUP BY name', [str(user.user_id)])
             for q in cursor.fetchall():
                 result_list = get_sensor_limited_data(sensor_type=models.Thermometer, user=user, limit_num=limit_num,
                                                       start_time=start_time, end_time=end_time, name=q[0])
@@ -59,7 +59,7 @@ def get_sensor_data(user: Account, sensor_type: str, limit_num: int = -1, start_
             result_list = get_sensor_limited_data(sensor_type=models.Humidometer, user=user, limit_num=limit_num,
                                                   start_time=start_time, end_time=end_time, name=name)
         else:
-            cursor.execute('SELECT name FROM humidometer WHERE account_id=%s GROUP BY name', [user.phone_number])
+            cursor.execute('SELECT name FROM humidometer WHERE account_id=%s GROUP BY name', [str(user.user_id)])
             for q in cursor.fetchall():
                 result_list = get_sensor_limited_data(sensor_type=models.Humidometer, user=user, limit_num=limit_num,
                                                       start_time=start_time, end_time=end_time, name=q[0])
@@ -68,7 +68,7 @@ def get_sensor_data(user: Account, sensor_type: str, limit_num: int = -1, start_
             result_list = get_sensor_limited_data(sensor_type=models.SmokeTransducer, user=user, limit_num=limit_num,
                                                   start_time=start_time, end_time=end_time, name=name)
         else:
-            cursor.execute('SELECT name FROM smoke_transducer WHERE account_id=%s GROUP BY name', [user.phone_number])
+            cursor.execute('SELECT name FROM smoke_transducer WHERE account_id=%s GROUP BY name', [str(user.user_id)])
             for q in cursor.fetchall():
                 result_list = get_sensor_limited_data(sensor_type=models.SmokeTransducer, user=user,
                                                       limit_num=limit_num,
@@ -78,7 +78,7 @@ def get_sensor_data(user: Account, sensor_type: str, limit_num: int = -1, start_
             result_list = get_sensor_limited_data(sensor_type=models.InfraredTransducer, user=user, limit_num=limit_num,
                                                   start_time=start_time, end_time=end_time, name=name)
         else:
-            cursor.execute('SELECT name FROM infrared_transducer WHERE account_id=%s GROUP BY name', [user.phone_number])
+            cursor.execute('SELECT name FROM infrared_transducer WHERE account_id=%s GROUP BY name', [str(user.user_id)])
             for q in cursor.fetchall():
                 result_list = get_sensor_limited_data(sensor_type=models.SmokeTransducer, user=user,
                                                       limit_num=limit_num,
@@ -119,7 +119,7 @@ def get_sensor_data_older(req: Request, sensor_type: str, limit_num: int, start_
 def get_sensor_data_guardian(req: Request, older_id: str, sensor_type: str, limit_num: int, start_time: int = -1,
                              end_time: int = -1, name: str = None):
     user = account.token_check(req=req, permission_limit=models.ACCOUNT_TYPE_GUARDIAN)
-    older = Account(phone_number=older_id)
+    older = Account(user_id=int(older_id))
     account.guardianship_check(older=older, guardian=user)
     return get_sensor_data(user=older, sensor_type=sensor_type.lower(), limit_num=int(limit_num), name=name,
                            start_time=view_utils.get_datetime(int(start_time)),
@@ -152,7 +152,7 @@ def get_sensor_warning_older(req: Request, start_time: int = -1, end_time: int =
 def get_sensor_warning_guardian(req: Request, older_id: str, start_time: int = -1, end_time: int = -1,
                                 limit_num: int = -1):
     user = account.token_check(req=req, permission_limit=models.ACCOUNT_TYPE_GUARDIAN)
-    older = Account(phone_number=older_id)
+    older = Account(user_id=int(older_id))
     account.guardianship_check(older=older, guardian=user)
     return get_sensor_warning(user=older, limit_num=int(limit_num),
                               start_time=view_utils.get_datetime(int(start_time)),

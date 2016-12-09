@@ -63,7 +63,7 @@ def get_sensor_warning_json_data(sensor_data: models.Sensor):
 def get_user_info_json(user: models.Account, get_phone_num: bool=False):
     portrait_base64 = base64.b64encode(user.portrait).decode()
     result = dict(nickname=user.nickname, gender=user.gender, account_type=user.account_type,
-                  portrait=portrait_base64)
+                  portrait=portrait_base64, user_id=user.user_id)
     if get_phone_num:
         result.update({'phone_number': user.phone_number})
     return result

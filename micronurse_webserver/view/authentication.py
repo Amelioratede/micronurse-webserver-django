@@ -6,14 +6,14 @@ from django.core.cache import cache
 from micronurse_webserver.view import result_code
 
 
-def get_token(user_id: str):
-    value = signing.dumps({'phone_number': str(user_id)}, salt='Micro Nurse')
+def get_token(user_id: int):
+    value = signing.dumps({'user_id': str(user_id)}, salt='Micro Nurse')
     return value
 
 
 def parse_token(token: str):
     origin_data = signing.loads(token, salt='Micro Nurse')
-    return origin_data['phone_number']
+    return origin_data['user_id']
 
 
 CAPTCHA_VALID_SECOND = 1800

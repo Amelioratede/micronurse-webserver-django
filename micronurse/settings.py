@@ -27,7 +27,7 @@ SECRET_KEY = '4(zz!6rfh_&g$e@6_-so7_i*y6yj!)%qm=16!axw1@u)&k!-6*'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 DEFAULT_CHARSET = 'utf-8'
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -108,7 +108,7 @@ DATABASES = {
         'USER': 'MicroNurse',
         'PASSWORD': '7824af5833060c92e8e4wefb7a44c110ee47',
         'HOST': 'localhost',
-        'PORT': '3306',
+        'PORT': 3306,
     }
 }
 
@@ -155,6 +155,11 @@ LOCALE_PATHS = [
     os.path.join(BASE_DIR, "micronurse_webserver/locale")
 ]
 
-MICRONURSE_MQTT_BROKER_CLIENT_ID = 'micronurse_webserver_user:admin'
-MICRONURSE_MQTT_BROKER_USERNAME = 'micronurse_webserver_user:admin'
-MICRONURSE_MQTT_BROKER_PASSWORD = '123456'
+
+MICRONURSE_MQTT_BROKER = {
+    'HOST': 'micronurse-mqttbroker',
+    'PORT': 13883,
+    'CLIENT_ID': 'micronurse_webserver_user:admin',
+    'USERNAME': 'micronurse_webserver_user:admin',
+    'PASSWORD': '123456'
+}

@@ -14,7 +14,8 @@ def register_test_account(sender, **kwargs):
         img_file = open(os.path.join(BASE_DIR, 'micronurse_webserver/default-portrait'), 'rb')
         img_bin = bytes(img_file.read())
         if not test_older_account:
-            test_older_account = Account(phone_number='123456',
+            test_older_account = Account(user_id=100,
+                                         phone_number='123456',
                                          password='123456',
                                          gender='M',
                                          account_type='O',
@@ -27,11 +28,11 @@ def register_test_account(sender, **kwargs):
 
         if not test_older_friend_account:
             test_older_friend_account = Account(phone_number='233333',
-                                         password='123456',
-                                         gender='F',
-                                         account_type='O',
-                                         nickname='Test-老人好友',
-                                         portrait=img_bin)
+                                                password='123456',
+                                                gender='F',
+                                                account_type='O',
+                                                nickname='Test-老人好友',
+                                                portrait=img_bin)
             test_older_friend_account.save()
             print('Test older friend account created.')
         else:
@@ -44,7 +45,6 @@ def register_test_account(sender, **kwargs):
         print('Test older friendship created.')
     else:
         test_older_account = test_older_account.get()
-
 
     test_guardian_account = Account.objects.filter(phone_number='666666')
     if not test_guardian_account:
@@ -65,6 +65,7 @@ def register_test_account(sender, **kwargs):
 
 if sys.argv[1] == 'migrate':
     from django.db.models.signals import post_migrate
+
     post_migrate.connect(register_test_account)
 elif sys.argv[1] == 'runserver':
     default_app_config = 'micronurse_webserver.apps.MicronurseWebserverConfig'

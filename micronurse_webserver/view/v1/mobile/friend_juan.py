@@ -19,7 +19,7 @@ def get_friendship(request: Request):
     user_list = list()
     if user.account_type == models.ACCOUNT_TYPE_OLDER:
         for f in models.Friendship.objects.filter(older=user):
-            user_list.append(view_utils.get_user_info_json(user=f.friend, get_phone_num=True))
+            user_list.append(view_utils.get_user_info_json(user=f.friend))
     if len(user_list) == 0:
         raise CheckException(result_code=result_code.MOBILE_FRIEND_JUAN_NO_FRIENDSHIP, message=_('Friend list is empty'),
                              status=status.HTTP_404_NOT_FOUND)
