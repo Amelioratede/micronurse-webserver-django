@@ -95,6 +95,7 @@ def disconnect_from_broker():
     if broker_client is None:
         return
     broker_client.disconnect()
+    print("Disconncted from MQTT broker")
     broker_client = None
 
 

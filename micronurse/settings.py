@@ -157,7 +157,7 @@ LOCALE_PATHS = [
 
 
 MICRONURSE_MQTT_BROKER = {
-    'HOST': 'micronurse-mqttbroker',
+    'HOST': 'localhost',
     'PORT': 13883,
     'CLIENT_ID': 'micronurse_webserver_user:admin',
     'USERNAME': 'micronurse_webserver_user:admin',

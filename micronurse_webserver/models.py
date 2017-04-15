@@ -9,7 +9,7 @@ ACCOUNT_TYPE_GUARDIAN = 'G'
 
 
 class Account(models.Model):
-    user_id = models.AutoField(primary_key=True)
+    user_id = models.BigAutoField(primary_key=True)
     phone_number = models.CharField(max_length=20, unique=True, null=False)
     password = models.CharField(max_length=20, null=False)
     nickname = models.CharField(max_length=25, unique=True, null=False)
@@ -61,6 +61,7 @@ class HomeAddress(models.Model):
     older = models.OneToOneField(Account, primary_key=True)
     longitude = models.FloatField(null=False)
     latitude = models.FloatField(null=False)
+    address = models.CharField(null=False, max_length=80)
 
     class Meta:
         db_table = 'home_address'
@@ -73,45 +74,58 @@ class Sensor(models.Model):
     class Meta:
         abstract = True
         unique_together = ('account', 'timestamp')
+        ordering = ['-timestamp']
 
 
-class Thermometer(Sensor):
-    sensor_type = 'thermometer'
-    name = models.CharField(max_length=30, null=False)
-    temperature = models.FloatField(null=False)
+class SensorInstance(models.Model):
+    account = models.ForeignKey(Account, null=False)
+    sensor_type = models.CharField(null=False, max_length=20)
+    name = models.CharField(null=False, max_length=20)
 
     class Meta:
+        db_table = 'sensor_instance'
+        unique_together = ('account', 'sensor_type', 'name')
+
+
+class FamilySensor(models.Model):
+    instance = models.ForeignKey(SensorInstance, null=False)
+    timestamp = models.DateTimeField(null=False)
+
+    class Meta:
+        abstract = True
+        unique_together = ('instance', 'timestamp')
         ordering = ['-timestamp']
+
+
+class Thermometer(FamilySensor):
+    sensor_type = 'thermometer'
+    temperature = models.FloatField(null=False)
+
+    class Meta(FamilySensor.Meta):
         db_table = 'thermometer'
 
 
-class InfraredTransducer(Sensor):
+class InfraredTransducer(FamilySensor):
     sensor_type = 'infrared_transducer'
-    name = models.CharField(max_length=30, null=False)
     warning = models.BooleanField(null=False)
 
-    class Meta:
-        ordering = ['-timestamp']
+    class Meta(FamilySensor.Meta):
         db_table = 'infrared_transducer'
 
 
-class SmokeTransducer(Sensor):
+class SmokeTransducer(FamilySensor):
     sensor_type = 'smoke_transducer'
-    name = models.CharField(max_length=30, null=False)
     smoke = models.IntegerField(null=False)
 
-    class Meta:
-        ordering = ['-timestamp']
+    class Meta(FamilySensor.Meta):
         db_table = 'smoke_transducer'
 
 
-class Humidometer(Sensor):
+class Humidometer(FamilySensor):
     sensor_type = 'humidometer'
-    name = models.CharField(max_length=30, null=False)
     humidity = models.FloatField(null=False)
 
-    class Meta:
-        ordering = ['-timestamp']
+    class Meta(FamilySensor.Meta):
         db_table = 'humidometer'
 
 
@@ -119,9 +133,9 @@ class GPS(Sensor):
     sensor_type = 'gps'
     longitude = models.FloatField(null=False)
     latitude = models.FloatField(null=False)
+    address = models.CharField(null=False, max_length=80)
 
-    class Meta:
-        ordering = ['-timestamp']
+    class Meta(Sensor.Meta):
         db_table = 'gps'
 
 
@@ -129,8 +143,7 @@ class FeverThermometer(Sensor):
     sensor_type = 'fever_thermometer'
     temperature = models.FloatField(null=False)
 
-    class Meta:
-        ordering = ['-timestamp']
+    class Meta(Sensor.Meta):
         db_table = 'fever_thermometer'
 
 
@@ -138,16 +151,5 @@ class PulseTransducer(Sensor):
     sensor_type = 'pulse_transducer'
     pulse = models.IntegerField(null=False)
 
-    class Meta:
-        ordering = ['-timestamp']
+    class Meta(Sensor.Meta):
         db_table = 'pulse_transducer'
-
-
-class Turgoscope(Sensor):
-    sensor_type = 'turgoscope'
-    low_blood_pressure = models.IntegerField(null=False)
-    high_blood_pressure = models.IntegerField(null=False)
-
-    class Meta:
-        ordering = ['-timestamp']
-        db_table = 'turgoscope'

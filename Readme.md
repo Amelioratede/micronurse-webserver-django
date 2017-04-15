@@ -39,8 +39,6 @@ python3 ./manage.py compilemessages
 python3 ./manage.py runserver 0.0.0.0:13000 --noreload
 ```
 
-
-
 ##  Notice
 
 ### Model Modify
@@ -54,29 +52,41 @@ python3 ./manage.py migrate
 
 ### Message Resource Update
 
+Message resources of this project can be found in `micronurse_webserver/locale`.
+
+If you have referred new message resources in Python code, you can execute following command to add new message resources to `django.po`:
+
+```shell
+python3 ./manage.py makemessages
+```
+
 If the message resources (in `django.po`)  has been modified, the following command should be executed to compile updated message resources:
 
 ```shell
-python3 ./manage.py migrate
+python3 ./manage.py compilemessages
 ```
-
-## Sync Code to Remote Host
-
-You can use `sync.sh` in root directory of project to sync your code to remote host. This script will sync your code via command  `rsync`.
-
-Basic usage of `sync.sh`:
-
-```shell
-sync.sh ${REMOTE_HOST}
-```
-
-`$REMOTE_HOST` refer to address of remote host that you want to sync code to.
-
-By default, remote user is `root`, and syncing path on remote host is `/root/micronurse-webserver`.
 
 ## Start Server at Backend
 
-You can execute `start_server.sh`  in root directory of project directly to start server at backend.
+You can execute `start_server.sh`  to start server at port `13000` at backend directly.
+
+And you can execute `tmux attach -t MicroNurse-Web` to view the log in real time.
+
+## Sync Code to Remote Host
+
+You can use `sync.sh` to sync your code to remote host. This script will sync your code via `rsync`.
+
+Write into `sync_config.sh` as below to configure it.
+
+```
+remote_path=/root/micronurse-webserver
+remote_user=root
+remote_host=127.0.0.1
+```
+
+Lines in `sync_config.sh` will override the configuration set in `sync.sh`.
+
+After that, you could sync your code.
 
 ## Relative Technical Documents
 

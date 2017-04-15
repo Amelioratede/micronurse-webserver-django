@@ -1,3 +1,6 @@
 #!/usr/bin/env bash
 
-python3 ./manage.py runserver 0.0.0.0:13000 --noreload > micronurse-webserver.log 2> micronurse-webserver.log &
+tmux new-session -d -s MicroNurse-Web \
+ "unset SSH_CLIENT;
+  unset SSH_CONNECTION;
+  unbuffer -p python3 ./manage.py runserver 0.0.0.0:13000 --noreload 2>&1 | tee -ai micronurse-webserver.log"

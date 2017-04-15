@@ -75,3 +75,5 @@ target/
 
 #Migration
 */migrations/*
+
+sync_config.sh

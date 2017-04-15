@@ -10,8 +10,9 @@ from rest_framework.response import Response
 from micronurse.settings import BASE_DIR
 from micronurse_webserver import models
 from micronurse_webserver.models import Account,HomeAddress
-from micronurse_webserver.utils import view_utils, check_utils
+from micronurse_webserver.utils import view_utils, check_utils, mqtt_broker_utils
 from micronurse_webserver.view import authentication, result_code
+from micronurse_webserver.view.v1.iot import sensor as iot_sensor_view
 from micronurse_webserver.view.check_exception import CheckException
 
 CACHE_KEY_MOBILE_TOKEN_PREFIX = 'mobile_token_'
@@ -69,7 +70,7 @@ def login(request: Request):
 def get_user_basic_info_by_phone(req: Request, phone_number: str):
     try:
         user = Account.objects.filter(phone_number=phone_number).get()
-        return view_utils.get_json_response(user=view_utils.get_user_info_json(user=user))
+        return view_utils.get_json_response(user=view_utils.get_user_info_dict(user=user))
     except Account.DoesNotExist:
         raise CheckException(result_code=result_code.MOBILE_USER_INFO_NOT_FOUND, message=_('User does not exist'),
                              status=status.HTTP_404_NOT_FOUND)
@@ -82,10 +83,10 @@ def get_guardianship(req: Request):
     user_list = list()
     if user.account_type == models.ACCOUNT_TYPE_OLDER:
         for g in models.Guardianship.objects.filter(older=user):
-            user_list.append(view_utils.get_user_info_json(user=g.guardian, get_phone_num=True))
+            user_list.append(view_utils.get_user_info_dict(user=g.guardian, get_phone_num=True))
     elif user.account_type == models.ACCOUNT_TYPE_GUARDIAN:
         for g in models.Guardianship.objects.filter(guardian=user):
-            user_list.append(view_utils.get_user_info_json(user=g.older, get_phone_num=True))
+            user_list.append(view_utils.get_user_info_dict(user=g.older, get_phone_num=True))
 
     if len(user_list) == 0:
         raise CheckException(result_code=result_code.MOBILE_GUARDIANSHIP_NOT_EXIST, message=_('Guardianship does not exist'),
@@ -145,49 +146,37 @@ def register(req: Request):
 def set_home_address(request:Request):
     user = token_check(req=request, permission_limit=models.ACCOUNT_TYPE_OLDER)
     user = Account.objects.filter(user_id=user.user_id).get()
-    longitude = request.data['home_longitude']
-    latitude = request.data['home_latitude']
+    longitude = float(request.data['home_longitude'])
+    latitude = float(request.data['home_latitude'])
     if 73.0 <= longitude <= 135.0 and 3 <= latitude <= 53:
-        if user.account_type == models.ACCOUNT_TYPE_OLDER:
-            new_home_address = HomeAddress(longitude=longitude,latitude=latitude,
-                                           older=user)
-            new_home_address.save()
-            return view_utils.get_json_response(status=status.HTTP_201_CREATED,
-                                                message=_("Set home address successfully"))
-        if user.account_type == models.ACCOUNT_TYPE_GUARDIAN:
-            raise CheckException(result_code=result_code.MOBILE_HOME_ADDRESS_SETTING_PERMISSIONS_LIMITED,
-                                 message=_("Only older can set home address"))
+        new_home_address = HomeAddress(longitude=longitude,latitude=latitude,
+                                       address=str(request.data['address']),
+                                       older=user)
+        new_home_address.save()
+        return view_utils.get_json_response(status=status.HTTP_201_CREATED,
+                                            message=_("Set home address successfully"))
     else:
         raise CheckException(result_code=result_code.MOBILE_HOME_ADDRESS_ILLEGAL,
                              message=_("Address is out of scope"))
 
 
 @api_view(['GET'])
-def get_home_address_from_older(request: Request):
-    user = token_check(req=request, permission_limit=models.ACCOUNT_TYPE_OLDER)
-    try:
-        home_address = HomeAddress.objects.filter(older=user).get()
-        longitude = home_address.longitude
-        latitude = home_address.latitude
-        return view_utils.get_json_response(latitude=latitude, longitude=longitude)
-    except HomeAddress.DoesNotExist:
-        raise CheckException(result_code=result_code.MOBILE_HOME_ADDRESS_NOT_EXIST, message=_('Home address not exist'),
-                             status=status.HTTP_404_NOT_FOUND)
-
-
-@api_view(['GET'])
-def get_home_address_from_guardian(request: Request, older_id: str):
-    user = token_check(req=request, permission_limit=models.ACCOUNT_TYPE_GUARDIAN)
-    older = Account(user_id=int(older_id))
-    guardianship_check(guardian=user, older=older)
+def get_home_address(req: Request, older_id: str = None):
+    if older_id is None:
+        user = token_check(req=req, permission_limit=models.ACCOUNT_TYPE_OLDER)
+        older = user
+    else:
+        user = token_check(req=req, permission_limit=models.ACCOUNT_TYPE_GUARDIAN)
+        older = Account(user_id=int(older_id))
+        guardianship_check(older=older, guardian=user)
     try:
         home_address = HomeAddress.objects.filter(older=older).get()
         longitude = home_address.longitude
         latitude = home_address.latitude
-        return view_utils.get_json_response(latitude=latitude, longitude=longitude)
+        return view_utils.get_json_response(latitude=latitude, longitude=longitude, address=home_address.address)
     except HomeAddress.DoesNotExist:
-        raise CheckException(result_code=result_code.MOBILE_HOME_ADDRESS_NOT_EXIST,
-                             message=_('Home address not exist'), status=status.HTTP_404_NOT_FOUND)
+        raise CheckException(result_code=result_code.MOBILE_HOME_ADDRESS_NOT_EXIST, message=_('Home address not exist'),
+                             status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['PUT'])
@@ -235,4 +224,5 @@ def check_login(req: Request, user_id: str):
     if str(user.user_id) != user_id:
         raise CheckException(status=status.HTTP_401_UNAUTHORIZED, result_code=status.HTTP_401_UNAUTHORIZED,
                              message=_('Token does not match this user.'))
+    mqtt_broker_utils.subscribe_topic(topic=iot_sensor_view.TOPIC_SENSOR_DATA_REPORT, topic_user=user, qos=1)
     return view_utils.get_json_response()

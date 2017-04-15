@@ -1,7 +1,7 @@
 import datetime
 import json
 import traceback
-from json import JSONDecodeError
+from json.decoder import JSONDecodeError
 from django.utils.translation import ugettext as _
 from paho.mqtt.client import MQTTMessage
 import paho.mqtt.client as mqtt_client
@@ -14,6 +14,7 @@ TOPIC_SENSOR_DATA_WARNING = 'sensor_warning'
 CACHE_KEY_SUPPRESS_WARNING_PREFIX = 'suppress_warning'
 SUPPRESS_WARNING_MINUTES = 3
 GPS_WARNING_TIMES = 3
+
 
 def mqtt_sensor_data_report(client: mqtt_client.Client, userdata: dict, message: MQTTMessage):
     # TODO: Push warnings for all sensor types.
@@ -30,50 +31,64 @@ def mqtt_sensor_data_report(client: mqtt_client.Client, userdata: dict, message:
         return
 
     try:
-        timestamp = datetime.datetime.fromtimestamp(int(int(payload['timestamp']) / 1000))
+        timestamp = datetime.datetime.fromtimestamp(int(payload['timestamp']))
         value = str(payload['value'])
-        name = None
+        sensor_type = str(payload['sensor_type']).lower()
+        instance = None
+        new_instance_flag = False
         if 'name' in payload.keys():
             name = str(payload['name'])
-        sensor_type = str(payload['sensor_type']).lower()
+            q = models.SensorInstance.objects.filter(account=user, sensor_type=sensor_type, name=name)
+            if q:
+                instance = q.get()
+            else:
+                instance = models.SensorInstance(account=user, sensor_type=sensor_type, name=name)
+                new_instance_flag = True
+
         if sensor_type == models.Humidometer.sensor_type and 0 <= float(value) <= 100:
-            humidometer = models.Humidometer(account=user, timestamp=timestamp, name=name, humidity=float(value))
+            if new_instance_flag:
+                instance.save()
+            humidometer = models.Humidometer(instance=instance, timestamp=timestamp, humidity=float(value))
             humidometer.save()
             if check_utils.check_abnormal_sensor_value(sensor_data=humidometer):
                 push_monitor_warning(older=user, sensor_data=humidometer)
         elif sensor_type == models.Thermometer.sensor_type:
-            thermometer = models.Thermometer(account=user, timestamp=timestamp, name=name, temperature=float(value))
+            if new_instance_flag:
+                instance.save()
+            thermometer = models.Thermometer(instance=instance, timestamp=timestamp, temperature=float(value))
             thermometer.save()
             if check_utils.check_abnormal_sensor_value(sensor_data=thermometer):
                 push_monitor_warning(older=user, sensor_data=thermometer)
         elif sensor_type == models.InfraredTransducer.sensor_type:
             if value.lower() == 'warning':
-                infrared_transducer = models.InfraredTransducer(account=user, timestamp=timestamp, name=name,
-                                                                warning=True)
+                if new_instance_flag:
+                    instance.save()
+                infrared_transducer = models.InfraredTransducer(instance=instance, timestamp=timestamp, warning=True)
                 infrared_transducer.save()
                 push_monitor_warning(older=user, sensor_data=infrared_transducer)
         elif sensor_type == models.SmokeTransducer.sensor_type and int(value) >= 0:
-            smoke_transducer = models.SmokeTransducer(account=user, timestamp=timestamp, name=name,
-                                                      smoke=int(value))
+            if new_instance_flag:
+                instance.save()
+            smoke_transducer = models.SmokeTransducer(instance=instance, timestamp=timestamp, smoke=int(value))
             smoke_transducer.save()
             if check_utils.check_abnormal_sensor_value(sensor_data=smoke_transducer):
                 push_monitor_warning(older=user, sensor_data=smoke_transducer)
         elif sensor_type == models.GPS.sensor_type:
             location = value.split(sep=',')
-            if len(location) != 2:
+            if len(location) != 3:
                 return
             else:
                 if not (-180 <= float(location[0]) <= 180 and -90 <= float(location[1]) <= 90):
                     return
                 gps = models.GPS(account=user, timestamp=timestamp, longitude=float(location[0]),
-                                 latitude=float(location[1]))
+                                 latitude=float(location[1]), address=str(location[2]))
                 gps.save()
                 if check_utils.check_abnormal_sensor_value(sensor_data=gps):
                     push_monitor_warning(older=user, sensor_data=gps)
                 else:
                     reset_suppress_warning(older=user, sensor_type=models.GPS.sensor_type)
         elif sensor_type == models.FeverThermometer.sensor_type:
-            if float(value) < 25 or float(value) > 50:
+            if float(value) < 33 or float(value) > 43:
                 return
             fever_thermometer = models.FeverThermometer(account=user, timestamp=timestamp, temperature=float(value))
             fever_thermometer.save()
@@ -86,17 +101,6 @@ def mqtt_sensor_data_report(client: mqtt_client.Client, userdata: dict, message:
             pulse_transducer.save()
             if check_utils.check_abnormal_sensor_value(sensor_data=pulse_transducer):
                 push_monitor_warning(older=user, sensor_data=pulse_transducer)
-        elif sensor_type == models.Turgoscope.sensor_type:
-            blood_pressure = value.split(sep='/')
-            if len(blood_pressure) == 2:
-                if int(blood_pressure[0]) <= 0 or int(blood_pressure[1]) <= 0:
-                    return
-                turgoscope = models.Turgoscope(account=user, timestamp=timestamp,
-                                               low_blood_pressure=int(blood_pressure[0]),
-                                               high_blood_pressure=int(blood_pressure[1]))
-                turgoscope.save()
-                if check_utils.check_abnormal_sensor_value(sensor_data=turgoscope):
-                    push_monitor_warning(older=user, sensor_data=turgoscope)
     except Exception:
         traceback.print_exc()
         return
@@ -132,15 +136,12 @@ def push_monitor_warning(older, sensor_data):
                 return
             cache.set(cache_key, True, SUPPRESS_WARNING_MINUTES * 60)
 
-    if isinstance(sensor_data,
-                  (models.Humidometer, models.Thermometer, models.InfraredTransducer, models.SmokeTransducer)):
-        msg = _('%s occur warning!') % sensor_data.name
+    if isinstance(sensor_data, models.FamilySensor):
+        msg = _('%s occur warning!') % sensor_data.instance.name
     if isinstance(sensor_data, models.FeverThermometer):
         msg = _('Abnormal body temperature!')
     if isinstance(sensor_data, models.PulseTransducer):
         msg = _('Abnormal pulse!')
-    if isinstance(sensor_data, models.Turgoscope):
-        msg = _('Abnormal blood pressure!')
     if isinstance(sensor_data, models.GPS):
         msg = _('Too far way from home!')
     mqtt_broker_utils.publish_message(topic=TOPIC_SENSOR_DATA_WARNING, topic_user=older, message=msg, qos=1)

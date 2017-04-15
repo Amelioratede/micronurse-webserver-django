@@ -2,6 +2,7 @@ from micronurse_webserver.view import result_code
 from micronurse_webserver import models
 from geopy.distance import vincenty
 
+
 def check_phone_num(phone_num: str):
     for c in phone_num:
         if '0' <= c <= '9':
@@ -36,10 +37,6 @@ def check_abnormal_sensor_value(sensor_data: models.Sensor):
             return True
     elif isinstance(sensor_data, models.PulseTransducer):
         if sensor_data.pulse <= 45 or sensor_data.pulse >= 110:
-            return True
-    elif isinstance(sensor_data, models.Turgoscope):
-        if (sensor_data.low_blood_pressure <= 60 or sensor_data.low_blood_pressure >= 95) and \
-                (sensor_data.high_blood_pressure <= 90 or sensor_data.high_blood_pressure >= 160):
             return True
     elif isinstance(sensor_data, models.GPS):
         for ha in models.HomeAddress.objects.filter(older=sensor_data.account):

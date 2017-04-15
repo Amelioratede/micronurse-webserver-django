@@ -72,4 +72,4 @@ def check_login(req: Request, user_id: str):
 def get_account_info(req: Request):
     user = token_check(req)
     user = Account.objects.filter(user_id=user.user_id).get()
-    return view_utils.get_json_response(user=view_utils.get_user_info_json(user=user))
+    return view_utils.get_json_response(user=view_utils.get_user_info_dict(user=user))

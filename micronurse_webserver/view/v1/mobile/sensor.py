@@ -1,159 +1,112 @@
 import datetime
-from django.db import connection
-from django.db.models import QuerySet
+
+from django.db.models import Q
 from django.utils.translation import ugettext as _
+from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from micronurse_webserver import models
 from micronurse_webserver.models import Account
 from micronurse_webserver.utils import view_utils
-from micronurse_webserver.utils.view_utils import get_sensor_json_data
 from micronurse_webserver.view import result_code
 from micronurse_webserver.view.check_exception import CheckException
 from micronurse_webserver.view.v1.mobile import account
 
 
-def get_sensor_limited_query_set(sensor_type: models.Sensor, user: Account, limit_num: int = -1,
-                                 start_time: datetime = None,
-                                 end_time: datetime = None, name: str = None):
-    if isinstance(sensor_type, QuerySet):
-        query_set = sensor_type.filter(account=user)
-    else:
-        query_set = sensor_type.objects.filter(account=user)
-    if name:
-        query_set = query_set.filter(name=name)
-    if start_time:
-        query_set = query_set.filter(timestamp__gte=start_time)
-    if end_time:
-        query_set = query_set.filter(timestamp__lte=end_time)
-    if limit_num > 0:
-        query_set = query_set[:limit_num]
-    return query_set
-
-
-def get_sensor_limited_data(sensor_type: models.Sensor, user: Account, limit_num: int = -1, start_time: datetime = None,
-                            end_time: datetime = None, name: str = None):
+def get_sensor_data_list(user: Account, sensor_type: str, limit_num: int, start_time: None, end_time=None,
+                         name: str = None):
     result_list = []
-    query_set = get_sensor_limited_query_set(sensor_type=sensor_type, user=user, limit_num=limit_num,
-                                             start_time=start_time, end_time=end_time, name=name)
-    for r in query_set:
-        result_list.append(get_sensor_json_data(sensor_data=r))
-    return result_list
-
-
-def get_sensor_data(user: Account, sensor_type: str, limit_num: int = -1, start_time: datetime = None,
-                    end_time: datetime = None, name: str = None):
-    result_list = []
-    cursor = connection.cursor()
+    sensor = None
     if sensor_type == models.Thermometer.sensor_type:
-        if name:
-            result_list = get_sensor_limited_data(sensor_type=models.Thermometer, user=user, limit_num=limit_num,
-                                                  start_time=start_time, end_time=end_time, name=name)
-        else:
-            cursor.execute('SELECT name FROM thermometer WHERE account_id=%s GROUP BY name', [str(user.user_id)])
-            for q in cursor.fetchall():
-                result_list = get_sensor_limited_data(sensor_type=models.Thermometer, user=user, limit_num=limit_num,
-                                                      start_time=start_time, end_time=end_time, name=q[0])
+        sensor = models.Thermometer
     elif sensor_type == models.Humidometer.sensor_type:
-        if name:
-            result_list = get_sensor_limited_data(sensor_type=models.Humidometer, user=user, limit_num=limit_num,
-                                                  start_time=start_time, end_time=end_time, name=name)
-        else:
-            cursor.execute('SELECT name FROM humidometer WHERE account_id=%s GROUP BY name', [str(user.user_id)])
-            for q in cursor.fetchall():
-                result_list = get_sensor_limited_data(sensor_type=models.Humidometer, user=user, limit_num=limit_num,
-                                                      start_time=start_time, end_time=end_time, name=q[0])
+        sensor = models.Humidometer
     elif sensor_type == models.SmokeTransducer.sensor_type:
-        if name:
-            result_list = get_sensor_limited_data(sensor_type=models.SmokeTransducer, user=user, limit_num=limit_num,
-                                                  start_time=start_time, end_time=end_time, name=name)
+        sensor = models.SmokeTransducer
+    elif sensor_type == models.InfraredTransducer:
+        sensor = models.InfraredTransducer
+
+    if sensor is not None:
+        if name is None:
+            for instance in models.SensorInstance.objects.filter(account=user, sensor_type=sensor_type):
+                for s in sensor.objects.filter(
+                        view_utils.general_query_time_limit(start_time=start_time, end_time=end_time,
+                                                            instance=instance))[:limit_num]:
+                    result_list.append(view_utils.get_sensor_data_dict(s))
         else:
-            cursor.execute('SELECT name FROM smoke_transducer WHERE account_id=%s GROUP BY name', [str(user.user_id)])
-            for q in cursor.fetchall():
-                result_list = get_sensor_limited_data(sensor_type=models.SmokeTransducer, user=user,
-                                                      limit_num=limit_num,
-                                                      start_time=start_time, end_time=end_time, name=q[0])
-    elif sensor_type == models.InfraredTransducer.sensor_type:
-        if name:
-            result_list = get_sensor_limited_data(sensor_type=models.InfraredTransducer, user=user, limit_num=limit_num,
-                                                  start_time=start_time, end_time=end_time, name=name)
-        else:
-            cursor.execute('SELECT name FROM infrared_transducer WHERE account_id=%s GROUP BY name', [str(user.user_id)])
-            for q in cursor.fetchall():
-                result_list = get_sensor_limited_data(sensor_type=models.SmokeTransducer, user=user,
-                                                      limit_num=limit_num,
-                                                      start_time=start_time, end_time=end_time, name=q[0])
-    elif sensor_type == models.FeverThermometer.sensor_type:
-        result_list = get_sensor_limited_data(sensor_type=models.FeverThermometer, user=user, limit_num=limit_num,
-                                              start_time=start_time, end_time=end_time, name=None)
+            q = models.SensorInstance.objects.filter(account=user, sensor_type=sensor_type, name=name)
+            if q:
+                instance = q.get()
+                for s in sensor.objects.filter(
+                        view_utils.general_query_time_limit(start_time=start_time, end_time=end_time,
+                                                            instance=instance))[:limit_num]:
+                    result_list.append(view_utils.get_sensor_data_dict(s))
+        return result_list
+
+    if sensor_type == models.FeverThermometer.sensor_type:
+        sensor = models.FeverThermometer
     elif sensor_type == models.PulseTransducer.sensor_type:
-        result_list = get_sensor_limited_data(sensor_type=models.PulseTransducer, user=user, limit_num=limit_num,
-                                              start_time=start_time, end_time=end_time, name=None)
-    elif sensor_type == models.Turgoscope.sensor_type:
-        result_list = get_sensor_limited_data(sensor_type=models.Turgoscope, user=user, limit_num=limit_num,
-                                              start_time=start_time, end_time=end_time, name=None)
+        sensor = models.PulseTransducer
     elif sensor_type == models.GPS.sensor_type:
-        result_list = get_sensor_limited_data(sensor_type=models.GPS, user=user, limit_num=limit_num,
-                                              start_time=start_time, end_time=end_time, name=None)
+        sensor = models.GPS
+
+    if sensor is not None:
+        for s in sensor.objects.filter(view_utils.general_query_time_limit(start_time=start_time, end_time=end_time,
+                                                                           account=user))[:limit_num]:
+            result_list.append(view_utils.get_sensor_data_dict(s))
     else:
         raise CheckException(result_code=result_code.MOBILE_SENSOR_TYPE_UNSUPPORTED,
                              message=_('Unsupported sensor type'))
+    return result_list
 
-    if len(result_list) == 0:
+
+@api_view(['GET'])
+def get_sensor_data(req: Request, sensor_type: str, limit_num: int, start_time: str = None, end_time: str = None,
+                    name: str = None, older_id: str = None):
+    if older_id is None:
+        user = account.token_check(req=req, permission_limit=models.ACCOUNT_TYPE_OLDER)
+        older = user
+    else:
+        user = account.token_check(req=req, permission_limit=models.ACCOUNT_TYPE_GUARDIAN)
+        older = Account(user_id=int(older_id))
+        account.guardianship_check(older=older, guardian=user)
+
+    data_list = get_sensor_data_list(user=older, sensor_type=sensor_type.lower(), limit_num=int(limit_num), name=name,
+                                     start_time=start_time, end_time=end_time)
+    if len(data_list) == 0:
         raise CheckException(result_code=result_code.MOBILE_SENSOR_DATA_NOT_FOUND,
                              message=_('Sensor data not found'))
     else:
-        return view_utils.get_json_response(data_list=result_list)
+        return view_utils.get_json_response(data_list=data_list)
 
 
-@api_view(['GET'])
-def get_sensor_data_older(req: Request, sensor_type: str, limit_num: int, start_time: int = -1, end_time: int = -1,
-                          name: str = None):
-    user = account.token_check(req=req, permission_limit=models.ACCOUNT_TYPE_OLDER)
-    return get_sensor_data(user=user, sensor_type=sensor_type.lower(), limit_num=int(limit_num), name=name,
-                           start_time=view_utils.get_datetime(int(start_time)),
-                           end_time=view_utils.get_datetime(int(end_time)))
-
-
-@api_view(['GET'])
-def get_sensor_data_guardian(req: Request, older_id: str, sensor_type: str, limit_num: int, start_time: int = -1,
-                             end_time: int = -1, name: str = None):
-    user = account.token_check(req=req, permission_limit=models.ACCOUNT_TYPE_GUARDIAN)
-    older = Account(user_id=int(older_id))
-    account.guardianship_check(older=older, guardian=user)
-    return get_sensor_data(user=older, sensor_type=sensor_type.lower(), limit_num=int(limit_num), name=name,
-                           start_time=view_utils.get_datetime(int(start_time)),
-                           end_time=view_utils.get_datetime(int(end_time)))
-
-
-def get_sensor_warning(user: Account, start_time: datetime = None, end_time: datetime = None, limit_num: int = -1):
+def get_sensor_warning_list(user: Account, limit_num: int, start_time: datetime = None, end_time: datetime = None):
     # TODO: Get warning data for all sensor types.
     result_list = []
-    query_set = models.InfraredTransducer.objects.filter(warning=True)
-    query_set = get_sensor_limited_query_set(sensor_type=query_set, user=user, start_time=start_time, end_time=end_time,
-                                             limit_num=limit_num)
-    for q in query_set:
-        result_list.append(view_utils.get_sensor_warning_json_data(sensor_data=q))
-    if len(result_list) == 0:
-        raise CheckException(result_code=result_code.MOBILE_SENSOR_WARNING_NOT_FOUND,
+    instance_q = Q()
+    for instance in models.SensorInstance.objects.filter(account=user,
+                                                         sensor_type=models.InfraredTransducer.sensor_type):
+        instance_q |= Q(instance=instance)
+    for it in models.InfraredTransducer.objects.filter(
+            view_utils.general_query_time_limit(start_time=start_time, end_time=end_time,
+                                                warning=True)) \
+            .filter(instance_q)[:limit_num]:
+        result_list.append(view_utils.get_sensor_warning_json_data(sensor_data=it))
+    return result_list
+
+
+@api_view(['GET'])
+def get_sensor_warning(req: Request, limit_num: str, start_time=None, end_time=None, older_id: str = None):
+    if older_id is None:
+        user = account.token_check(req=req, permission_limit=models.ACCOUNT_TYPE_OLDER)
+        older = user
+    else:
+        user = account.token_check(req=req, permission_limit=models.ACCOUNT_TYPE_GUARDIAN)
+        older = Account(user_id=int(older_id))
+        account.guardianship_check(older=older, guardian=user)
+    warning_list = get_sensor_warning_list(user=older, limit_num=int(limit_num),
+                                           start_time=start_time, end_time=end_time)
+    if len(warning_list) == 0:
+        raise CheckException(status=status.HTTP_404_NOT_FOUND, result_code=result_code.MOBILE_SENSOR_WARNING_NOT_FOUND,
                              message=_('Sensor warning not found'))
-    return view_utils.get_json_response(warning_list=result_list)
-
-
-@api_view(['GET'])
-def get_sensor_warning_older(req: Request, start_time: int = -1, end_time: int = -1, limit_num: int = -1):
-    user = account.token_check(req=req, permission_limit=models.ACCOUNT_TYPE_OLDER)
-    return get_sensor_warning(user=user, limit_num=int(limit_num),
-                              start_time=view_utils.get_datetime(int(start_time)),
-                              end_time=view_utils.get_datetime(int(end_time)))
-
-
-@api_view(['GET'])
-def get_sensor_warning_guardian(req: Request, older_id: str, start_time: int = -1, end_time: int = -1,
-                                limit_num: int = -1):
-    user = account.token_check(req=req, permission_limit=models.ACCOUNT_TYPE_GUARDIAN)
-    older = Account(user_id=int(older_id))
-    account.guardianship_check(older=older, guardian=user)
-    return get_sensor_warning(user=older, limit_num=int(limit_num),
-                              start_time=view_utils.get_datetime(int(start_time)),
-                              end_time=view_utils.get_datetime(int(end_time)))
+    return view_utils.get_json_response(warning_list=warning_list)
