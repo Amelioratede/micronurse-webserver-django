@@ -3,7 +3,7 @@ import sys
 from django.apps import AppConfig
 import django.dispatch
 from micronurse_webserver.utils import mqtt_broker_utils
-from micronurse_webserver.view.v1.iot.sensor import TOPIC_SENSOR_DATA_REPORT
+from micronurse_webserver.view.v1.iot.sensor import MQTT_TOPIC_SENSOR_DATA_REPORT
 from micronurse_webserver.view.v1.iot.sensor import mqtt_sensor_data_report
 
 
@@ -16,7 +16,7 @@ class MicronurseWebserverConfig(AppConfig):
 
     def ready(self):
         mqtt_broker_utils.init_client()
-        mqtt_broker_utils.add_message_callback(topic_filter=TOPIC_SENSOR_DATA_REPORT + '/#',
+        mqtt_broker_utils.add_message_callback(topic_filter=MQTT_TOPIC_SENSOR_DATA_REPORT + '/#',
                                                callback=mqtt_sensor_data_report)
         mqtt_broker_utils.connect_to_broker()
         signal.signal(signal.SIGINT, self.on_server_shutdown)

@@ -1,3 +1,4 @@
+import json
 import os
 
 from django.core.cache import cache
@@ -13,6 +14,8 @@ from micronurse_webserver.models import Account,HomeAddress
 from micronurse_webserver.utils import view_utils, check_utils, mqtt_broker_utils
 from micronurse_webserver.view import authentication, result_code
 from micronurse_webserver.view.v1.iot import sensor as iot_sensor_view
+from micronurse_webserver.view.v1.iot import account as iot_account
+
 from micronurse_webserver.view.check_exception import CheckException
 
 CACHE_KEY_MOBILE_TOKEN_PREFIX = 'mobile_token_'
@@ -22,7 +25,7 @@ MOBILE_TOKEN_VALID_HOURS = 120
 def token_check(req: Request, permission_limit: str = None):
     try:
         token = req.META['HTTP_AUTH_TOKEN']
-        user_id = authentication.parse_token(token)
+        user_id = int(authentication.parse_token(token))
     except Exception:
         raise CheckException(status=status.HTTP_401_UNAUTHORIZED, result_code=status.HTTP_401_UNAUTHORIZED,
                              message=_('Invalid token'))
@@ -224,5 +227,31 @@ def check_login(req: Request, user_id: str):
     if str(user.user_id) != user_id:
         raise CheckException(status=status.HTTP_401_UNAUTHORIZED, result_code=status.HTTP_401_UNAUTHORIZED,
                              message=_('Token does not match this user.'))
-    mqtt_broker_utils.subscribe_topic(topic=iot_sensor_view.TOPIC_SENSOR_DATA_REPORT, topic_user=user, qos=1)
+    mqtt_broker_utils.subscribe_topic(topic=iot_sensor_view.MQTT_TOPIC_SENSOR_DATA_REPORT, topic_user=user.user_id, qos=1)
     return view_utils.get_json_response()
+
+
+@api_view(['PUT'])
+def login_iot(req: Request):
+    user = token_check(req=req, permission_limit=models.ACCOUNT_TYPE_OLDER)
+    temp_id = iot_account.check_anonymous_token(req.data['device_token'])
+    if temp_id is None:
+        raise CheckException(status=status.HTTP_401_UNAUTHORIZED, result_code=result_code.MOBILE_IOT_LOGIN_INVALID_DEVICE_TOKEN,
+                             message=_('Invalid device token'))
+    cache.delete(iot_account.CACHE_KEY_IOT_ANONYMOUS_TOKEN_PREFIX + str(temp_id))
+    token_str = authentication.get_token(user.user_id)
+    cache.set(iot_account.CACHE_KEY_IOT_TOKEN_PREFIX + str(user.user_id), token_str, None)
+    login_msg = json.dumps({'action': 'login', 'user_id': int(user.user_id), 'token': token_str})
+    mqtt_broker_utils.publish_message(topic=iot_account.MQTT_TOPIC_IOT_ACCOUNT, topic_user=temp_id, qos=1,
+                                      message=login_msg)
+    return view_utils.get_json_response(status=status.HTTP_201_CREATED, message=_('Login request has been sent'))
+
+
+@api_view(['DELETE'])
+def logout_iot(req: Request):
+    user = token_check(req=req, permission_limit=models.ACCOUNT_TYPE_OLDER)
+    cache.delete(iot_account.CACHE_KEY_IOT_TOKEN_PREFIX + str(user.user_id))
+    logout_msg = json.dumps({'action': 'logout'})
+    mqtt_broker_utils.publish_message(topic=iot_account.MQTT_TOPIC_IOT_ACCOUNT, topic_user=user.user_id, qos=0,
+                                      message=logout_msg)
+    return view_utils.get_json_response(message=_('Logout request has been sent'))

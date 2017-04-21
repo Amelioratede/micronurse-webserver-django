@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Micro Nurse\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-14 21:16+0800\n"
+"POT-Creation-Date: 2017-04-20 08:27+0800\n"
 "Last-Translator: Shengyun Zhou <GGGZ-1101-28@Live.cn>\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
@@ -27,133 +27,144 @@ msgstr "请求数据不完整或已损坏"
 msgid "Server internal error"
 msgstr "服务器内部错误"
 
-#: micronurse_webserver/view/v1/iot/account.py:25
-#: micronurse_webserver/view/v1/iot/account.py:29
-#: micronurse_webserver/view/v1/mobile/account.py:27
+#: micronurse_webserver/view/v1/iot/account.py:48
+#: micronurse_webserver/view/v1/iot/account.py:61
+#: micronurse_webserver/view/v1/iot/account.py:65
 #: micronurse_webserver/view/v1/mobile/account.py:31
+#: micronurse_webserver/view/v1/mobile/account.py:35
 msgid "Invalid token"
 msgstr "Token无效或过期"
 
-#: micronurse_webserver/view/v1/iot/account.py:39
-#: micronurse_webserver/view/v1/mobile/account.py:57
-msgid "Incorrect password"
-msgstr "密码不正确"
+#: micronurse_webserver/view/v1/iot/account.py:51
+#, fuzzy
+#| msgid "Token does not match this user."
+msgid "Token does not match given ID."
+msgstr "Token与该用户不匹配"
 
-#: micronurse_webserver/view/v1/iot/account.py:43
-msgid "Only older can login"
-msgstr "只有老人可以登录"
-
-#: micronurse_webserver/view/v1/iot/account.py:46
-#: micronurse_webserver/view/v1/mobile/account.py:60
-msgid "Login successfully"
-msgstr "登录成功"
-
-#: micronurse_webserver/view/v1/iot/account.py:50
-#: micronurse_webserver/view/v1/mobile/account.py:64
-#: micronurse_webserver/view/v1/mobile/account.py:74
-#: micronurse_webserver/view/v1/mobile/account.py:216
-msgid "User does not exist"
-msgstr "用户不存在"
-
-#: micronurse_webserver/view/v1/iot/account.py:66
-#: micronurse_webserver/view/v1/mobile/account.py:240
+#: micronurse_webserver/view/v1/iot/account.py:75
+#: micronurse_webserver/view/v1/mobile/account.py:229
 msgid "Token does not match this user."
 msgstr "Token与该用户不匹配"
 
-#: micronurse_webserver/view/v1/iot/sensor.py:151
+#: micronurse_webserver/view/v1/iot/sensor.py:140
 #, python-format
 msgid "%s occur warning!"
 msgstr "%s 发出警报"
 
-#: micronurse_webserver/view/v1/iot/sensor.py:153
+#: micronurse_webserver/view/v1/iot/sensor.py:142
 msgid "Abnormal body temperature!"
 msgstr "体温出现异常"
 
-#: micronurse_webserver/view/v1/iot/sensor.py:155
+#: micronurse_webserver/view/v1/iot/sensor.py:144
 msgid "Abnormal pulse!"
 msgstr "脉搏出现异常"
 
-#: micronurse_webserver/view/v1/iot/sensor.py:157
+#: micronurse_webserver/view/v1/iot/sensor.py:146
 msgid "Too far way from home!"
 msgstr "离家距离过大，偏离常住区域"
 
-#: micronurse_webserver/view/v1/mobile/account.py:37
+#: micronurse_webserver/view/v1/mobile/account.py:41
 msgid "Permission denied"
 msgstr "没有权限调用此API"
 
-#: micronurse_webserver/view/v1/mobile/account.py:48
-#: micronurse_webserver/view/v1/mobile/account.py:91
+#: micronurse_webserver/view/v1/mobile/account.py:52
+#: micronurse_webserver/view/v1/mobile/account.py:95
 msgid "Guardianship does not exist"
 msgstr "监护关系不存在"
 
-#: micronurse_webserver/view/v1/mobile/account.py:111
-#: micronurse_webserver/view/v1/mobile/account.py:223
+#: micronurse_webserver/view/v1/mobile/account.py:61
+msgid "Incorrect password"
+msgstr "密码不正确"
+
+#: micronurse_webserver/view/v1/mobile/account.py:64
+msgid "Login successfully"
+msgstr "登录成功"
+
+#: micronurse_webserver/view/v1/mobile/account.py:68
+#: micronurse_webserver/view/v1/mobile/account.py:78
+#: micronurse_webserver/view/v1/mobile/account.py:205
+msgid "User does not exist"
+msgstr "用户不存在"
+
+#: micronurse_webserver/view/v1/mobile/account.py:115
+#: micronurse_webserver/view/v1/mobile/account.py:212
 msgid "Invalid phone number"
 msgstr "手机号无效"
 
-#: micronurse_webserver/view/v1/mobile/account.py:114
+#: micronurse_webserver/view/v1/mobile/account.py:118
 msgid "This phone number has been registered"
 msgstr "该手机号已被注册"
 
-#: micronurse_webserver/view/v1/mobile/account.py:119
-#: micronurse_webserver/view/v1/mobile/account.py:204
+#: micronurse_webserver/view/v1/mobile/account.py:123
+#: micronurse_webserver/view/v1/mobile/account.py:193
 msgid "Password length is too short or too long"
 msgstr "密码长度过短或过长"
 
-#: micronurse_webserver/view/v1/mobile/account.py:122
-#: micronurse_webserver/view/v1/mobile/account.py:207
+#: micronurse_webserver/view/v1/mobile/account.py:126
+#: micronurse_webserver/view/v1/mobile/account.py:196
 msgid "Illegal password format"
 msgstr "密码格式不合法"
 
-#: micronurse_webserver/view/v1/mobile/account.py:126
+#: micronurse_webserver/view/v1/mobile/account.py:130
 msgid "This nickname has been registered"
 msgstr "该昵称已被注册"
 
-#: micronurse_webserver/view/v1/mobile/account.py:129
+#: micronurse_webserver/view/v1/mobile/account.py:133
 msgid "Illegal gender"
 msgstr "性别不合法"
 
-#: micronurse_webserver/view/v1/mobile/account.py:131
+#: micronurse_webserver/view/v1/mobile/account.py:135
 msgid "Illegal account type"
 msgstr "账号类型不合法"
 
-#: micronurse_webserver/view/v1/mobile/account.py:133
-#: micronurse_webserver/view/v1/mobile/account.py:210
+#: micronurse_webserver/view/v1/mobile/account.py:137
+#: micronurse_webserver/view/v1/mobile/account.py:199
 msgid "Incorrect captcha"
 msgstr "验证码不正确"
 
-#: micronurse_webserver/view/v1/mobile/account.py:141
+#: micronurse_webserver/view/v1/mobile/account.py:145
 msgid "Register successfully"
 msgstr "注册成功"
 
-#: micronurse_webserver/view/v1/mobile/account.py:156
+#: micronurse_webserver/view/v1/mobile/account.py:160
 msgid "Set home address successfully"
 msgstr "成功设置家庭地址"
 
-#: micronurse_webserver/view/v1/mobile/account.py:159
+#: micronurse_webserver/view/v1/mobile/account.py:163
 msgid "Address is out of scope"
 msgstr "地址超出范围"
 
-#: micronurse_webserver/view/v1/mobile/account.py:177
-#: micronurse_webserver/view/v1/mobile/account.py:193
+#: micronurse_webserver/view/v1/mobile/account.py:181
 msgid "Home address not exist"
 msgstr "未设置家庭地址"
 
-#: micronurse_webserver/view/v1/mobile/account.py:214
+#: micronurse_webserver/view/v1/mobile/account.py:203
 msgid "Reset password successfully"
 msgstr "重置密码成功"
 
-#: micronurse_webserver/view/v1/mobile/account.py:227
+#: micronurse_webserver/view/v1/mobile/account.py:216
 msgid "Sending captcha must be at at least 1 minute interval"
 msgstr "再次发送验证码需至少间隔1分钟"
 
-#: micronurse_webserver/view/v1/mobile/account.py:230
+#: micronurse_webserver/view/v1/mobile/account.py:219
 msgid "Send captcha failed, please try again"
 msgstr "验证码发送失败，请稍后重试"
 
-#: micronurse_webserver/view/v1/mobile/account.py:232
+#: micronurse_webserver/view/v1/mobile/account.py:221
 msgid "Send captcha successfully. It will expire after 30 mins"
 msgstr "验证码已发送，30分钟后失效"
+
+#: micronurse_webserver/view/v1/mobile/account.py:240
+msgid "Invalid device token"
+msgstr "设备Token无效"
+
+#: micronurse_webserver/view/v1/mobile/account.py:247
+msgid "Login request has been sent"
+msgstr "登录请求已发送"
+
+#: micronurse_webserver/view/v1/mobile/account.py:257
+msgid "Logout request has been sent"
+msgstr "注销请求已发送"
 
 #: micronurse_webserver/view/v1/mobile/friend_juan.py:24
 msgid "Friend list is empty"
@@ -171,17 +182,20 @@ msgstr "发布动态成功"
 msgid "No friend moment"
 msgstr "暂无好友动态"
 
-#: micronurse_webserver/view/v1/mobile/sensor.py:57
+#: micronurse_webserver/view/v1/mobile/sensor.py:59
 msgid "Unsupported sensor type"
 msgstr "不支持的传感器类型"
 
-#: micronurse_webserver/view/v1/mobile/sensor.py:76
+#: micronurse_webserver/view/v1/mobile/sensor.py:78
 msgid "Sensor data not found"
 msgstr "未获取到传感器数据"
 
-#: micronurse_webserver/view/v1/mobile/sensor.py:104
+#: micronurse_webserver/view/v1/mobile/sensor.py:111
 msgid "Sensor warning not found"
 msgstr "未获取到传感器警报消息"
+
+#~ msgid "Only older can login"
+#~ msgstr "只有老人可以登录"
 
 #~ msgid "Abnormal blood pressure!"
 #~ msgstr "血压出现异常"

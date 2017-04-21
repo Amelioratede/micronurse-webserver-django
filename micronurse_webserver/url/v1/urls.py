@@ -6,14 +6,16 @@ from micronurse_webserver.view.v1.mobile import sensor
 
 urlpatterns = [
     # IoT
-    url(r'^iot/login$', iot_account.login),
-    url(r'^iot/logout$', iot_account.logout),
+    url(r'^iot/anonymous_token$', iot_account.get_anonymous_token),
+    url(r'^iot/check_anonymous/(?P<temp_id>.+)$', iot_account.check_anonymous_status),
     url(r'^iot/check_login/(?P<user_id>\d+)$', iot_account.check_login),
     url(r'^iot/account_info$', iot_account.get_account_info),
 
     # Mobile
     url(r'^mobile/account/login$', mobile_account.login),
     url(r'^mobile/account/logout$', mobile_account.logout),
+    url(r'^mobile/account/iot_login$', mobile_account.login_iot),
+    url(r'^mobile/account/iot_logout', mobile_account.logout_iot),
     url(r'^mobile/account/user_basic_info/by_phone/(?P<phone_number>\d+)$',
         mobile_account.get_user_basic_info_by_phone),
     url(r'^mobile/account/register$', mobile_account.register),

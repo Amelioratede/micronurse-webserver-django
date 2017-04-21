@@ -8,8 +8,8 @@ import paho.mqtt.client as mqtt_client
 from micronurse_webserver.utils import mqtt_broker_utils
 from django.core.cache import cache
 
-TOPIC_SENSOR_DATA_REPORT = 'sensor_data_report'
-TOPIC_SENSOR_DATA_WARNING = 'sensor_warning'
+MQTT_TOPIC_SENSOR_DATA_REPORT = 'sensor_data_report'
+MQTT_TOPIC_SENSOR_DATA_WARNING = 'sensor_warning'
 
 CACHE_KEY_SUPPRESS_WARNING_PREFIX = 'suppress_warning'
 SUPPRESS_WARNING_MINUTES = 3
@@ -144,4 +144,4 @@ def push_monitor_warning(older, sensor_data):
         msg = _('Abnormal pulse!')
     if isinstance(sensor_data, models.GPS):
         msg = _('Too far way from home!')
-    mqtt_broker_utils.publish_message(topic=TOPIC_SENSOR_DATA_WARNING, topic_user=older, message=msg, qos=1)
+    mqtt_broker_utils.publish_message(topic=MQTT_TOPIC_SENSOR_DATA_WARNING, topic_user=older.user_id, message=msg, qos=1)

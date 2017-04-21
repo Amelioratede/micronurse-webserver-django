@@ -6,7 +6,7 @@ from django.core.cache import cache
 from micronurse_webserver.view import result_code
 
 
-def get_token(user_id: int):
+def get_token(user_id):
     value = signing.dumps({'user_id': str(user_id)}, salt='Micro Nurse')
     return value
 

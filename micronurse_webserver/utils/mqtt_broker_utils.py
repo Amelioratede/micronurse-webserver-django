@@ -5,9 +5,6 @@ import queue
 from micronurse import settings
 import paho.mqtt.client as mqtt_client
 
-TOPIC_SENSOR_DATA_REPORT_PREFIX = 'sensor_data_report'
-TOPIC_SENSOR_WARNING_PREFIX = 'sensor_warning'
-
 USER_DATA_FIRST_CONNECT = 'first_connect'
 MQTT_ACTION_SUBSCRIPTION = 'subscription'
 MQTT_ACTION_PUBLISH = 'publish'
@@ -82,7 +79,8 @@ def init_client():
 
 def connect_to_broker():
     global broker_client
-    broker_client.connect(host=settings.MICRONURSE_MQTT_BROKER['HOST'], port=int(settings.MICRONURSE_MQTT_BROKER['PORT']),
+    broker_client.connect(host=settings.MICRONURSE_MQTT_BROKER['HOST'],
+                          port=int(settings.MICRONURSE_MQTT_BROKER['PORT']),
                           keepalive=15)
     broker_client.loop_start()
     t = threading.Thread(target=broker_loop)
@@ -95,19 +93,16 @@ def disconnect_from_broker():
     if broker_client is None:
         return
     broker_client.disconnect()
-    print("Disconncted from MQTT broker")
+    print("Disconnected from MQTT broker")
     broker_client = None
 
 
-def subscribe_topic(topic: str, topic_user = None, qos: int = 1, max_retry: int = 5):
-    """
-    :type topic_user: micronurse_webserver.models.Account
-    """
+def subscribe_topic(topic: str, topic_user=None, qos: int = 1):
     global broker_client
     global mqtt_queue
     if broker_client is None or mqtt_queue is None:
         return
-    full_topic = topic if topic_user is None else topic + '/' + str(topic_user.user_id)
+    full_topic = topic if topic_user is None else topic + '/' + str(topic_user)
     mqtt_queue.put(
         item={KEY_MQTT_ACTION: MQTT_ACTION_SUBSCRIPTION, KEY_MQTT_TOPIC: full_topic, KEY_MQTT_QOS: qos},
         block=True,
@@ -122,15 +117,12 @@ def add_message_callback(topic_filter: str, callback):
     broker_client.message_callback_add(sub=topic_filter, callback=callback)
 
 
-def publish_message(topic: str, message: str, topic_user = None, qos: int = 0, retain: bool = False):
-    """
-    :type topic_user: micronurse_webserver.models.Account
-    """
+def publish_message(topic: str, message: str, topic_user=None, qos: int = 0, retain: bool = False):
     global broker_client
     global mqtt_queue
     if broker_client is None or mqtt_queue is None:
         return
-    full_topic = topic if topic_user is None else topic + '/' + str(topic_user.user_id)
+    full_topic = topic if topic_user is None else topic + '/' + str(topic_user)
     mqtt_queue.put(
         item={KEY_MQTT_ACTION: MQTT_ACTION_PUBLISH, KEY_MQTT_TOPIC: full_topic,
               KEY_MQTT_PAYLOAD: message, KEY_MQTT_QOS: qos, KEY_MQTT_RETAIN: retain},
