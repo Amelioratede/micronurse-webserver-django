@@ -3,6 +3,12 @@ from micronurse_webserver.view.v1.iot import account as iot_account
 from micronurse_webserver.view.v1.mobile import friend_juan
 from micronurse_webserver.view.v1.mobile import account as mobile_account
 from micronurse_webserver.view.v1.mobile import sensor
+from micronurse_webserver.view.v1.mobile import binding
+from micronurse_webserver.view.v1.mobile import add_friends
+
+
+
+
 
 urlpatterns = [
     # IoT
@@ -26,6 +32,14 @@ urlpatterns = [
     url(r'^mobile/account/set_home_address$', mobile_account.set_home_address),
     url(r'^mobile/account/home_address/(?P<older_id>\d+)$', mobile_account.get_home_address),
     url(r'^mobile/account/home_address$', mobile_account.get_home_address),
+
+    url(r'^mobile/binding/person_info/(?P<search_id>\d+)$', binding.get_person),
+    url(r'^mobile/binding/binding_req$', binding.binding_req),
+    url(r'^mobile/binding/binding_resp$', binding.binding_resp),
+
+    url(r'^mobile/add_friends/person_info/(?P<search_id>\d+)$', add_friends.get_person),
+    url(r'^mobile/add_friends/add_friends_req$', add_friends.add_friends_req),
+    url(r'^mobile/add_friends/add_friends_resp$', add_friends.add_friends_resp),
 
     url(
         r'^mobile/sensor/sensor_data/latest/by_name/(?P<older_id>\d+)/(?P<sensor_type>.+)/(?P<name>.+)/T(?P<start_time>\d+)/T(?P<end_time>\d+)/(?P<limit_num>\d+)$',
