@@ -109,6 +109,7 @@ DATABASES = {
         'PASSWORD': '7824af5833060c92e8e4wefb7a44c110ee47',
         'HOST': 'localhost',
         'PORT': 3306,
+        'CONN_MAX_AGE': 28800,
     }
 }
 
