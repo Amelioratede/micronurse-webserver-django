@@ -88,7 +88,7 @@ def mqtt_sensor_data_report(client: mqtt_client.Client, userdata: dict, message:
                 else:
                     reset_suppress_warning(older=user, sensor_type=models.GPS.sensor_type)
         elif sensor_type == models.FeverThermometer.sensor_type:
-            if float(value) < 33 or float(value) > 43:
+            if float(value) < 33 or float(value) > 42:
                 return
             fever_thermometer = models.FeverThermometer(account=user, timestamp=timestamp, temperature=float(value))
             fever_thermometer.save()
