@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Micro Nurse\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-20 08:27+0800\n"
+"POT-Creation-Date: 2017-05-16 11:14+0800\n"
 "Last-Translator: Shengyun Zhou <GGGZ-1101-28@Live.cn>\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
@@ -27,39 +27,39 @@ msgstr "请求数据不完整或已损坏"
 msgid "Server internal error"
 msgstr "服务器内部错误"
 
-#: micronurse_webserver/view/v1/iot/account.py:48
-#: micronurse_webserver/view/v1/iot/account.py:61
-#: micronurse_webserver/view/v1/iot/account.py:65
+#: micronurse_webserver/view/v1/iot/account.py:45
+#: micronurse_webserver/view/v1/iot/account.py:58
+#: micronurse_webserver/view/v1/iot/account.py:62
 #: micronurse_webserver/view/v1/mobile/account.py:31
 #: micronurse_webserver/view/v1/mobile/account.py:35
 msgid "Invalid token"
 msgstr "Token无效或过期"
 
-#: micronurse_webserver/view/v1/iot/account.py:51
+#: micronurse_webserver/view/v1/iot/account.py:48
 #, fuzzy
 #| msgid "Token does not match this user."
 msgid "Token does not match given ID."
 msgstr "Token与该用户不匹配"
 
-#: micronurse_webserver/view/v1/iot/account.py:75
+#: micronurse_webserver/view/v1/iot/account.py:71
 #: micronurse_webserver/view/v1/mobile/account.py:229
 msgid "Token does not match this user."
 msgstr "Token与该用户不匹配"
 
-#: micronurse_webserver/view/v1/iot/sensor.py:140
+#: micronurse_webserver/view/v1/iot/sensor.py:146
 #, python-format
 msgid "%s occur warning!"
 msgstr "%s 发出警报"
 
-#: micronurse_webserver/view/v1/iot/sensor.py:142
+#: micronurse_webserver/view/v1/iot/sensor.py:148
 msgid "Abnormal body temperature!"
 msgstr "体温出现异常"
 
-#: micronurse_webserver/view/v1/iot/sensor.py:144
+#: micronurse_webserver/view/v1/iot/sensor.py:150
 msgid "Abnormal pulse!"
 msgstr "脉搏出现异常"
 
-#: micronurse_webserver/view/v1/iot/sensor.py:146
+#: micronurse_webserver/view/v1/iot/sensor.py:152
 msgid "Too far way from home!"
 msgstr "离家距离过大，偏离常住区域"
 
@@ -83,6 +83,10 @@ msgstr "登录成功"
 #: micronurse_webserver/view/v1/mobile/account.py:68
 #: micronurse_webserver/view/v1/mobile/account.py:78
 #: micronurse_webserver/view/v1/mobile/account.py:205
+#: micronurse_webserver/view/v1/mobile/add_friends.py:50
+#: micronurse_webserver/view/v1/mobile/add_friends.py:67
+#: micronurse_webserver/view/v1/mobile/binding.py:64
+#: micronurse_webserver/view/v1/mobile/binding.py:81
 msgid "User does not exist"
 msgstr "用户不存在"
 
@@ -166,6 +170,71 @@ msgstr "登录请求已发送"
 msgid "Logout request has been sent"
 msgstr "注销请求已发送"
 
+#: micronurse_webserver/view/v1/mobile/add_friends.py:31
+msgid "The adding friends request has existed"
+msgstr "添加好友请求已存在"
+
+#: micronurse_webserver/view/v1/mobile/add_friends.py:35
+msgid "The friendship has existed"
+msgstr "好友关系已存在"
+
+#: micronurse_webserver/view/v1/mobile/add_friends.py:38
+msgid "Can not build the friendship"
+msgstr ""
+
+#: micronurse_webserver/view/v1/mobile/add_friends.py:55
+msgid "Adding friends request has sent"
+msgstr "添加好友请求已发送"
+
+#: micronurse_webserver/view/v1/mobile/add_friends.py:75
+msgid "The friendship has been built successfully"
+msgstr ""
+
+#: micronurse_webserver/view/v1/mobile/add_friends.py:77
+#: micronurse_webserver/view/v1/mobile/add_friends.py:84
+msgid "Adding friends request invalid"
+msgstr "无效的添加好友请求"
+
+#: micronurse_webserver/view/v1/mobile/add_friends.py:82
+msgid "You have refused the adding friends request"
+msgstr "你已拒绝该添加好友的请求"
+
+#: micronurse_webserver/view/v1/mobile/add_friends.py:87
+#: micronurse_webserver/view/v1/mobile/binding.py:101
+msgid "Return Info error"
+msgstr ""
+
+#: micronurse_webserver/view/v1/mobile/binding.py:31
+#: micronurse_webserver/view/v1/mobile/binding.py:45
+msgid "The binding request has existed"
+msgstr "绑定请求已存在"
+
+#: micronurse_webserver/view/v1/mobile/binding.py:35
+#: micronurse_webserver/view/v1/mobile/binding.py:49
+msgid "The binding has existed"
+msgstr "监护关系已存在"
+
+#: micronurse_webserver/view/v1/mobile/binding.py:52
+msgid "Can not build the binding"
+msgstr ""
+
+#: micronurse_webserver/view/v1/mobile/binding.py:69
+msgid "Binding request has sent"
+msgstr "登录请求已发送"
+
+#: micronurse_webserver/view/v1/mobile/binding.py:89
+msgid "The guardianship has been built successfully"
+msgstr ""
+
+#: micronurse_webserver/view/v1/mobile/binding.py:91
+#: micronurse_webserver/view/v1/mobile/binding.py:98
+msgid "Binding request invalid"
+msgstr ""
+
+#: micronurse_webserver/view/v1/mobile/binding.py:96
+msgid "You have refused the binding request"
+msgstr ""
+
 #: micronurse_webserver/view/v1/mobile/friend_juan.py:24
 msgid "Friend list is empty"
 msgstr "好友列表为空"
@@ -182,6 +251,37 @@ msgstr "发布动态成功"
 msgid "No friend moment"
 msgstr "暂无好友动态"
 
+#: micronurse_webserver/view/v1/mobile/publish_message.py:15
+#, python-format
+msgid "%s wanna bind a guardian: %s"
+msgstr ""
+
+#: micronurse_webserver/view/v1/mobile/publish_message.py:18
+#, python-format
+msgid "%s wanna bind an older: %s"
+msgstr ""
+
+#: micronurse_webserver/view/v1/mobile/publish_message.py:24
+msgid "Bind succeeded!"
+msgstr ""
+
+#: micronurse_webserver/view/v1/mobile/publish_message.py:26
+msgid "Bind failed!"
+msgstr ""
+
+#: micronurse_webserver/view/v1/mobile/publish_message.py:31
+#, python-format
+msgid "%s wanna friend %s "
+msgstr ""
+
+#: micronurse_webserver/view/v1/mobile/publish_message.py:37
+msgid "Adding friends succeeded!"
+msgstr ""
+
+#: micronurse_webserver/view/v1/mobile/publish_message.py:39
+msgid "Adding friends failed!"
+msgstr ""
+
 #: micronurse_webserver/view/v1/mobile/sensor.py:59
 msgid "Unsupported sensor type"
 msgstr "不支持的传感器类型"
@@ -193,6 +293,10 @@ msgstr "未获取到传感器数据"
 #: micronurse_webserver/view/v1/mobile/sensor.py:111
 msgid "Sensor warning not found"
 msgstr "未获取到传感器警报消息"
+
+#: micronurse_webserver/view/v1/mobile/sensor.py:129
+msgid "Modify sensor config successfully"
+msgstr "修改传感器设置成功"
 
 #~ msgid "Only older can login"
 #~ msgstr "只有老人可以登录"

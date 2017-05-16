@@ -23,7 +23,7 @@ def push_binding_resp_message(choice: str, user_id, binding_id):
     if choice == 'accept':
         msg = binding_id + '/' + user_id + '/' + _('Bind succeeded!')
     if choice == 'refuse':
-        msg == binding_id + '/' + user_id + '/' + _('Bind failed!')
+        msg = binding_id + '/' + user_id + '/' + _('Bind failed!')
     mqtt_broker_utils.publish_message(topic=MQTT_TOPIC_BINDING_RESP_MESSAGE, topic_user=binding_id, message=msg, qos=1)
 
 
@@ -36,6 +36,6 @@ def push_adding_friends_resp_message(choice: str, user_id, adding_id):
     if choice == 'accept':
         msg = adding_id + '/' + user_id + '/' + _('Adding friends succeeded!')
     if choice == 'refuse':
-        msg == adding_id + '/' + user_id + '/' + _('Adding friends failed!')
+        msg = adding_id + '/' + user_id + '/' + _('Adding friends failed!')
     mqtt_broker_utils.publish_message(topic=MQTT_TOPIC_ADD_FRIENDS_RESP_MESSAGE, topic_user=adding_id, message=msg, qos=1)
 

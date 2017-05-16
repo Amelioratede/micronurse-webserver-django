@@ -6,10 +6,6 @@ from micronurse_webserver.view.v1.mobile import sensor
 from micronurse_webserver.view.v1.mobile import binding
 from micronurse_webserver.view.v1.mobile import add_friends
 
-
-
-
-
 urlpatterns = [
     # IoT
     url(r'^iot/anonymous_token$', iot_account.get_anonymous_token),
@@ -89,6 +85,8 @@ urlpatterns = [
         sensor.get_sensor_warning),
     url(r'^mobile/sensor/warning/(?P<limit_num>\d+)$',
         sensor.get_sensor_warning),
+    url(r'^mobile/sensor/config$', sensor.get_sensor_config),
+    url(r'^mobile/sensor/config/new$', sensor.set_sensor_config),
 
     url(r'^mobile/friend_juan/friendship', friend_juan.get_friendship),
     url(r'^mobile/friend_juan/post_moment', friend_juan.post_moment),

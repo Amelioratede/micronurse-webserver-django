@@ -32,6 +32,9 @@ def check_abnormal_sensor_value(sensor_data: models.Sensor):
     elif isinstance(sensor_data, models.SmokeTransducer):
         if sensor_data.smoke >= 300:
             return True
+    elif isinstance(sensor_data, models.InfraredTransducer):
+        if sensor_data.warning:
+            return True
     elif isinstance(sensor_data, models.FeverThermometer):
         if sensor_data.temperature <= 35.5 or sensor_data.temperature >= 37.3:
             return True

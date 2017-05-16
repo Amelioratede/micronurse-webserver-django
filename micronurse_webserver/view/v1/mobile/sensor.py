@@ -74,7 +74,7 @@ def get_sensor_data(req: Request, sensor_type: str, limit_num: int, start_time: 
     data_list = get_sensor_data_list(user=older, sensor_type=sensor_type.lower(), limit_num=int(limit_num), name=name,
                                      start_time=start_time, end_time=end_time)
     if len(data_list) == 0:
-        raise CheckException(result_code=result_code.MOBILE_SENSOR_DATA_NOT_FOUND,
+        raise CheckException(status=status.HTTP_404_NOT_FOUND, result_code=result_code.MOBILE_SENSOR_DATA_NOT_FOUND,
                              message=_('Sensor data not found'))
     else:
         return view_utils.get_json_response(data_list=data_list)
@@ -87,6 +87,8 @@ def get_sensor_warning_list(user: Account, limit_num: int, start_time: datetime 
     for instance in models.SensorInstance.objects.filter(account=user,
                                                          sensor_type=models.InfraredTransducer.sensor_type):
         instance_q |= Q(instance=instance)
+    if not instance_q:
+        return result_list
     for it in models.InfraredTransducer.objects.filter(
             view_utils.general_query_time_limit(start_time=start_time, end_time=end_time,
                                                 warning=True)) \
@@ -110,3 +112,21 @@ def get_sensor_warning(req: Request, limit_num: str, start_time=None, end_time=N
         raise CheckException(status=status.HTTP_404_NOT_FOUND, result_code=result_code.MOBILE_SENSOR_WARNING_NOT_FOUND,
                              message=_('Sensor warning not found'))
     return view_utils.get_json_response(warning_list=warning_list)
+
+
+@api_view(['GET'])
+def get_sensor_config(req: Request):
+    user = account.token_check(req=req, permission_limit=models.ACCOUNT_TYPE_OLDER)
+    config = view_utils.get_sensor_config(user=user)
+    return view_utils.get_json_response(config=view_utils.get_sensor_config_dict(config))
+
+
+@api_view(['PUT'])
+def set_sensor_config(req: Request):
+    user = account.token_check(req=req, permission_limit=models.ACCOUNT_TYPE_OLDER)
+    infrared_enabled = req.data['config'].get('infrared_enabled')
+    config = view_utils.get_sensor_config(user=user)
+    if infrared_enabled is not None:
+        config.infrared_enabled = bool(infrared_enabled)
+    config.save()
+    return view_utils.get_json_response(status=status.HTTP_201_CREATED, message=_('Modify sensor config successfully'))

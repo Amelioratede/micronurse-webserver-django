@@ -69,6 +69,21 @@ def get_moment_dict(moment: models.FriendMoment):
     }
 
 
+def get_sensor_config_dict(config: models.SensorConfig):
+    return {
+        'infrared_enabled': config.infrared_enabled
+    }
+
+
+def get_sensor_config(user: models.Account):
+    try:
+        config = models.SensorConfig.objects.filter(user=user).get()
+    except models.SensorConfig.DoesNotExist:
+        # Generate default configuration
+        config = models.SensorConfig(user=user, infrared_enabled=True)
+        config.save()
+    return config
+
 def general_query_time_limit(end_time=None, start_time=None, **kwargs):
     if end_time is not None:
         q = Q(timestamp__lte=datetime.datetime.fromtimestamp(int(end_time)))
