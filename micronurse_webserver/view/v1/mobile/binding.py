@@ -55,10 +55,9 @@ def binding_check(user: Account, search_user: Account):
 
 @api_view(['POST'])
 def binding_req(req: Request):
-    user_id = req.data['user_id']
+    user = account.token_check(req=req)
     search_id = req.data['search_id']
     try:
-        user = Account.objects.filter(user_id=int(user_id)).get()
         search_user = Account.objects.filter(user_id=int(search_id)).get()
     except Account.DoesNotExist:
         raise CheckException(result_code=result_code.MOBILE_USER_INFO_NOT_FOUND, message=_('User does not exist'),
@@ -66,34 +65,33 @@ def binding_req(req: Request):
     req_id = binding_check(user, search_user)
     cache.set(req_id, req_id, MOBILE_TOKEN_VALID_HOURS * 3600)
     publish_message.push_binding_req_message(user, search_user)
-    return view_utils.get_json_response(message=_('Binding request has sent'), user_id=user_id, search_id=search_id)
+    return view_utils.get_json_response(message=_('Binding request has sent'), user_id=user.user_id, search_id=search_id)
 
 
 @api_view(['PUT'])
 def binding_resp(req: Request):
-    user_id = req.data['user_id']
+    user = account.token_check(req=req)
     binding_id = req.data['binding_id']
     binding_tag = req.data['binding_tag']
     try:
-        user = Account.objects.filter(user_id=int(user_id)).get()
         binding_user = Account.objects.filter(user_id=int(binding_id)).get()
     except Account.DoesNotExist:
         raise CheckException(result_code=result_code.MOBILE_USER_INFO_NOT_FOUND, message=_('User does not exist'),
                              status=status.HTTP_404_NOT_FOUND)
-    cache_token = cache.get(binding_id + user_id)
+    cache_token = cache.get(binding_id + user.user_id)
     if binding_tag == 'accept':
         if cache_token is not None:
             guardianship = Guardianship(user, binding_user)
             guardianship.save()
-            publish_message.push_binding_resp_message(binding_tag, user_id, binding_id)
-            return view_utils.get_json_response(message=_('The guardianship has been built successfully'), user_id=user_id, binding_id=binding_id)
+            publish_message.push_binding_resp_message(binding_tag, user.user_id, binding_id)
+            return view_utils.get_json_response(message=_('The guardianship has been built successfully'), user_id=user.user_id, binding_id=binding_id)
         else:
             raise CheckException(result_code=result_code.MOBILE_BINDING_REQUEST_INVALID, message=_('Binding request invalid'),
                                  status=status.HTTP_408_REQUEST_TIMEOUT)
     elif binding_tag == 'refuse':
         if cache_token is not None:
-            publish_message.push_binding_resp_message(binding_tag, user_id, binding_id)
-            return view_utils.get_json_response(message=_('You have refused the binding request'), user_id=user_id, binding_id=binding_id)
+            publish_message.push_binding_resp_message(binding_tag, user.user_id, binding_id)
+            return view_utils.get_json_response(message=_('You have refused the binding request'), user_id=user.user_id, binding_id=binding_id)
         else:
             raise CheckException(result_code=result_code.MOBILE_BINDING_REQUEST_INVALID, message=_('Binding request invalid'),
                                  status=status.HTTP_408_REQUEST_TIMEOUT)
