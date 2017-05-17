@@ -153,3 +153,8 @@ class PulseTransducer(Sensor):
 
     class Meta(Sensor.Meta):
         db_table = 'pulse_transducer'
+
+
+class SensorConfig(models.Model):
+    user = models.OneToOneField(Account, primary_key=True)
+    infrared_enabled = models.BooleanField(null=False, default=True)

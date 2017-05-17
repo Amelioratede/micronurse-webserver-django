@@ -109,6 +109,7 @@ DATABASES = {
         'PASSWORD': '7824af5833060c92e8e4wefb7a44c110ee47',
         'HOST': 'localhost',
         'PORT': 3306,
+        'CONN_MAX_AGE': 3600,   # 1 hour
     }
 }
 
@@ -162,4 +163,19 @@ MICRONURSE_MQTT_BROKER = {
     'CLIENT_ID': 'micronurse_webserver_user:admin',
     'USERNAME': 'micronurse_webserver_user:admin',
     'PASSWORD': '123456'
+}
+
+MICRONURSE_SCHEDULER = {
+    'REDIS_DB': 7,
+    'THREAD_POOL_SIZE': 20,
+    'MAX_JOB_INSTANCE': 5
+}
+
+MICRONURSE_SAVE_SENSOR_DATA_JOB = {
+    'INTERVAL_MINUTES': 2,
+}
+
+MICRONURSE_SENSOR_WARNING = {
+    'SUPPRESS_WARNING_MINUTES': 3,
+    'GPS_WARNING_TIMES': 3
 }
