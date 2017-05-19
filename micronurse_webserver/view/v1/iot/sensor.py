@@ -118,11 +118,15 @@ def mqtt_sensor_data_report(client: mqtt_client.Client, userdata: dict, message:
             if new_instance_flag:
                 sensor_cache_data_list.append(sensor)
             else:
+                instance_find_flag = False
                 for s in sensor_cache_data_list:
                     if s.instance.name == instance.name:
+                        instance_find_flag = True
                         if not check_utils.check_abnormal_sensor_value(s):
                             sensor_cache_data_list[sensor_cache_data_list.index(s)] = sensor
                         break
+                if not instance_find_flag:
+                    sensor_cache_data_list.append(sensor)
         else:
             if not check_utils.check_abnormal_sensor_value(sensor_cache_data_list[0]):
                 sensor_cache_data_list[0] = sensor
