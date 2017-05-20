@@ -8,7 +8,7 @@ import paho.mqtt.client as mqtt_client
 from micronurse_webserver.utils import mqtt_broker_utils
 from django.core.cache import cache
 from micronurse import settings
-from django.db import transaction
+from django.db import transaction, connection
 
 MQTT_TOPIC_SENSOR_DATA_REPORT = 'sensor_data_report'
 MQTT_TOPIC_SENSOR_DATA_WARNING = 'sensor_warning'
@@ -19,6 +19,7 @@ CACHE_KEY_SENSOR_DATA_CACHE_PREFIX = 'sensor_data_cache'
 
 def sensor_data_save():
     from micronurse_webserver import models
+    from micronurse_webserver.utils import check_utils
     try:
         with transaction.atomic():
             for u in models.Account.objects.filter(account_type=models.ACCOUNT_TYPE_OLDER):
@@ -29,11 +30,13 @@ def sensor_data_save():
                 with transaction.atomic():
                     for key in sensor_data_cache_dict:
                         for s in sensor_data_cache_dict[key]:
-                            s.save()
+                            if not check_utils.check_abnormal_sensor_value(s):
+                                s.save()
                 cache.delete(cache_key)
         print('Finish saving sensor data')
     except Exception:
         traceback.print_exc()
+    connection.close()
 
 
 def mqtt_sensor_data_report(client: mqtt_client.Client, userdata: dict, message: MQTTMessage):
@@ -105,15 +108,20 @@ def mqtt_sensor_data_report(client: mqtt_client.Client, userdata: dict, message:
 
         if sensor is None:
             return
-        if check_utils.check_abnormal_sensor_value(sensor):
+        abnormal_flag = check_utils.check_abnormal_sensor_value(sensor)
+        if abnormal_flag:
             push_monitor_warning(older=user, sensor_data=sensor)
         cache_key = CACHE_KEY_SENSOR_DATA_CACHE_PREFIX + '/' + str(user_id)
         sensor_cache_dict = cache.get(cache_key)
         if sensor_cache_dict is None:
             sensor_cache_dict = {}
         sensor_cache_data_list = sensor_cache_dict.get(sensor_type)
+
         if sensor_cache_data_list is None:
             sensor_cache_dict[sensor_type] = [sensor]
+            if abnormal_flag:
+                sensor.save()
+                connection.close()
         elif isinstance(sensor, models.FamilySensor):
             if new_instance_flag:
                 sensor_cache_data_list.append(sensor)
@@ -122,14 +130,29 @@ def mqtt_sensor_data_report(client: mqtt_client.Client, userdata: dict, message:
                 for s in sensor_cache_data_list:
                     if s.instance.name == instance.name:
                         instance_find_flag = True
-                        if not check_utils.check_abnormal_sensor_value(s):
+                        cache_abnormal_flag = check_utils.check_abnormal_sensor_value(s)
+                        if cache_abnormal_flag and not abnormal_flag:
+                            sensor_cache_data_list.insert(sensor_cache_data_list.index(s), sensor)
+                        elif not cache_abnormal_flag:
                             sensor_cache_data_list[sensor_cache_data_list.index(s)] = sensor
+                            if abnormal_flag:
+                                sensor.save()
+                                connection.close()
                         break
                 if not instance_find_flag:
                     sensor_cache_data_list.append(sensor)
+                    if abnormal_flag:
+                        sensor.save()
+                        connection.close()
         else:
-            if not check_utils.check_abnormal_sensor_value(sensor_cache_data_list[0]):
+            cache_abnormal_flag = check_utils.check_abnormal_sensor_value(sensor_cache_data_list[0])
+            if cache_abnormal_flag and not abnormal_flag:
+                sensor_cache_data_list.insert(0, sensor)
+            elif not cache_abnormal_flag:
                 sensor_cache_data_list[0] = sensor
+                if abnormal_flag:
+                    sensor.save()
+                    connection.close()
         cache.set(cache_key, sensor_cache_dict, settings.MICRONURSE_SAVE_SENSOR_DATA_JOB['INTERVAL_MINUTES'] * 2 * 60)
     except Exception:
         traceback.print_exc()
